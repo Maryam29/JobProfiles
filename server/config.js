@@ -23,6 +23,7 @@ class Database {
         query( sql, args ) {
         return new Promise( ( resolve, reject ) => {
             this.connection.query( sql, args, ( err, rows ) => {
+                console.log(rows);
                 if ( err )
                     return reject( err );
                 resolve( rows );
@@ -45,8 +46,6 @@ class Database {
             } );
     }
 }
-
-
 module.exports = {
 Database: Database
 };

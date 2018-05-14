@@ -1,3 +1,28 @@
-<h1>
-  {{title}}
-</h1>
+<div id="wrapper">
+    <!-- <ng-template [ngIf]="!IsAuthenticated()">
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li routerLinkActive="active">
+                    <a [routerLink]="['/report']">Report</a>
+                </li>
+                <li routerLinkActive="active">
+                    <a [routerLink]="['/overrides']">Overrides</a>
+                </li> 
+                <li>
+                    <a style="cursor: pointer" (click)="OnLogout()">Logout</a>
+                </li>
+            </ul>
+          </nav>
+    </ng-template> -->
+  <div id="page-wrapper" style="margin:100px">
+     <!-- <ng-template [ngIf]="!IsAuthenticated()">
+          <div class="col-md-12">
+              <app-signin></app-signin>
+          </div>
+      </ng-template> -->
+      <router-outlet></router-outlet>
+
+  </div>
+</div>
