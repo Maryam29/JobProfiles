@@ -11,26 +11,16 @@ export class AuthService {
     constructor(private router: Router, private http: Http) { }
 
     Signin(userid, password) {
+        console.log(userid,password);
         return this.http.post(`login`, { username: userid, password: password }).map(res => {
             if (res.status === 400) {
                 this.router.navigate(['/signin']);
                 throw new Error("" + res.status);
             }
             else {
-                console.log(res.json());
                 return res.json();
             }
-        }).subscribe(obj => {
-            if(obj.user == false){
-                console.log(obj);
-            }
-            else{
-                console.log("Signin Successful");
-                this.isAuthenticated.next(true);
-                this.router.navigate(['/']);
-            }
-            
-        }, error => this.router.navigate(['/signin']));
+        })
     }
 
     Signup(userid, password) {
@@ -42,15 +32,7 @@ export class AuthService {
             else {
                 return res.json();
             }
-        }).subscribe(obj => {
-            if(obj.user == false){
-                console.log(obj);
-            }
-            else{
-                this.isAuthenticated.next(true);
-                this.router.navigate(['/']);
-            }
-        }, error => this.router.navigate(['/signup']));
+        });
     }
 
     isSessionOpen() {
@@ -73,6 +55,29 @@ export class AuthService {
         });
     }
 
+    SendOTP(phoneno){
+        console.log("SendOTP Auth")
+       return this.http.post('sendOTP',{phoneno:phoneno}).map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Verify. Some Error Occured" + res.status);
+            }
+            else{
+              return res.json();
+            }
+          })
+        }
+
+    VerifyOTP(otp, phoneno){
+        console.log("Verify OTP")
+        return this.http.post('verifyOTP',{phoneno:phoneno, otp:otp}).map(res =>{
+             if(res.status == 400){
+                 throw new Error("Couldn't Verify. Some Error Occured" + res.status);
+             }
+             else{
+               return res.json();
+             }
+           })
+    }
     // Logout() {
     //     return this.http.get('logout').subscribe(obj => {
     //         this.router.navigate(['/signin']);

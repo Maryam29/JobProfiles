@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signin',
@@ -8,8 +9,8 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./signin.component.css']
 })
 export class SigninComponent implements OnInit {
-
-  constructor(private authService: AuthService) { }
+  @Input() message:string;
+  constructor(private router:Router, private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -17,7 +18,19 @@ export class SigninComponent implements OnInit {
   OnSignIn(form:NgForm){
     const userid = form.value.userid;
     const password = form.value.password;
-    console.log(form);
-    this.authService.Signin(userid, password);
+    this.authService.Signin(userid, password).subscribe(obj => {
+      if(obj.user == false){
+          this.message = "Your username or password is incorrect";
+      }
+      else{
+          //console.log("Signin Successful");
+          this.authService.isAuthenticated.next(true);
+          this.router.navigate(['/']);
+      }
+  }, error => this.router.navigate(['/signin']));;
+  }
+
+  GoToSignup(){
+    this.router.navigate(['/signup']);
   }
 }

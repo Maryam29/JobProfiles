@@ -3,6 +3,7 @@ var jwt = require('jsonwebtoken');
 var passport = require("passport");
 var md5 = require('md5');
 var cookieParser = require('cookie-parser');
+var moment = require('moment');
 
 // pass passport for configuration
 const express = require('express');
@@ -13,6 +14,12 @@ const path = require('path');
 const _ = require('lodash');
 const { Database } = require('./server/config.js');
 var LocalStrategy   = require('passport-local').Strategy;
+var otpGenerator = require('otp-generator');
+const Nexmo = require('nexmo');
+const nexmo = new Nexmo({
+  apiKey: 'd2904ed2',
+  apiSecret: 'hpURcQUhLd3uVo3A'
+});
 const app = express();
 //require('./server/passportconfig.js')(passport);
 
@@ -24,11 +31,7 @@ app.use(bodyParser.json());
 //   serialize users into and deserialize users out of the session.  Typically,
 //   this will be as simple as storing the user ID when serializing, and finding
 //   the user by ID when deserializing.
-const cookieExpirationDate = new Date();
-console.log(cookieExpirationDate.toString());
-const cookieExpirationDays = 3;
-cookieExpirationDate.setMinutes(cookieExpirationDate.getMinutes() + cookieExpirationDays);
-console.log(cookieExpirationDate.toString());
+
 app.use(session({
     secret: 'SecretKey', // must match with the secret for cookie-parser
     resave: true,
@@ -51,13 +54,13 @@ app.use(passport.session()); // persistent login sessions
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
         console.log("Inside serialization");
-        done(null, user.UserID);
+        done(null, user.phoneNo);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
         console.log("Inside deserialization");
-        done(null,{userid:1,name:"maryam"});
+        done(null,{phoneNo:1,name:"maryam"});
     });
 
     passport.use('login', new LocalStrategy({
@@ -65,14 +68,18 @@ app.use(passport.session()); // persistent login sessions
     },
     (req, username, password, done) => { // verification function
             const db = new Database();
-            db.query("select * from `user_info` where UserID='" + username + "'", (err, rows) => {
+            console.log(password);
+
+            db.query("select * from `user_info` where phoneNo='" + username + "'", (err, rows) => {
+                console.log(err);
+                console.log(rows);
                 if (err) {
                     return done(err);
                 }
                 if (!rows.length) {
                     return done(null, false,  'No user found.');
                 }
-                if (!(rows[0].Password == md5(password))) {
+                if (!(rows[0].password == md5(password))) {
                     return done(null, false,  ' Wrong password.'); //create the loginMessage and save it to session as flashdata
                 }
                 return done(null, rows[0]);
@@ -88,27 +95,19 @@ app.use(passport.session()); // persistent login sessions
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req,userid, password, done) {
-        userid = req.body.userid;
+        phoneNo = req.body.userid;
         password = req.body.password;
                  // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
             const db = new Database();
-            db.query("select * from `user_info` where UserID ='" + userid + "'", (err, rows) => {
-                if (err) {
-                    return done(err);
-                }
-                if (rows.length) {
-                    return done(null, false, 'You are already registered. Please Log in');
-                }
-            else {
                 //if there is no user with that email,create the user
             var newUserMysql = new Object();
-            newUserMysql.userid  = userid;
+            newUserMysql.phoneNo  = phoneNo;
             newUserMysql.password = md5(password); // use the generateHash function in our user model
             
-            var insertQuery = "INSERT INTO user_info ( userID, password ) values ('"+ userid +"','"+ md5(password) +"')";
+            var insertQuery = "UPDATE user_info set password ='" +md5(password) +"' where phoneNo = '"+phoneNo+"'";
             db.query(insertQuery,function(err,rows){
                 if(err){
                     return done(err);
@@ -117,9 +116,7 @@ app.use(passport.session()); // persistent login sessions
                     return done(null, newUserMysql);
                 }
             
-            }); 
-            }
-        });
+            });
     });
 }));
 //app.use(flash()); // use connect-flash for flash messages stored in session
@@ -157,11 +154,12 @@ app.get('/isSessionOpen', (req, res) => {
 
   /* Handle Login POST */
   app.post('/login', (req, res, next) => {
+      console.log(req.body);
       passport.authenticate('login', {
         successRedirect: '/',
-        failureRedirect: '/login',
         failureFlash: true
     }, (err, user, info) => {
+        console.log(info);
         if (err) {
             return res.status(400).json({
                 message: info,
@@ -193,6 +191,57 @@ app.get('/isSessionOpen', (req, res) => {
  
   /* Handle Registration POST */
   /* Handle Login POST */
+
+  app.post('/sendOTP', async (req, res) => {
+    const phoneno = req.body.phoneno;
+    isExistingAccount(phoneno).then((isVerified)=>{
+        if(isVerified){
+            res.send({OTPSent: false, message: "You're already registered. Please signin"});
+        }
+        else{
+            var otp = otpGenerator.generate(6, { upperCase: true, specialChars: false });
+            StoreOTPDB(otp, phoneno).then((isSuccessfullyStored)=>{
+                if(isSuccessfullyStored){
+                    // var message = "Use this One Time Password to complete the registration:"+ otp;
+                //     nexmo.message.sendSms(
+                //     'MSGOTP', phoneno, 'A text message sent using the Nexmo SMS API',
+                //     (err, responseData) => {
+                //         if (err) {
+                //             console.log(err);
+                //             throw new Error(err)
+                //         } 
+                //         else {
+                //             console.log(responseData);
+                //             res.send({OTPSent: true, message: "OTP Sent successfully"});
+                //         }
+                //     }
+                // );
+                res.send({OTPSent: true, message: "OTP Sent successfully"});
+                }
+                else{
+                    res.send({OTPSent: false, message: "Some Error Occured. Try Again"});
+                }
+             })
+        }
+    })
+    .catch(e => res.send({OTPSent: false, message: "Some Error Occured. Try Again"}))
+    
+});
+
+app.post('/verifyOTP', (req, res) => {
+    otp = req.body.otp;
+    phoneNo = req.body.phoneno;
+    CheckifOTPisValid(otp, phoneNo).then((isVerified) => {
+        if(isVerified){
+            res.send({OTPVerified: true, message: "OTP Verified successfully"});
+        }
+        else{
+            res.send({OTPVerified: false, message: "OTP Not matched"});
+        }
+    })
+    .catch(e => res.send({OTPVerified: false, message: "Some Error Occured. Try Again"}));
+});
+
   app.post('/register', (req, res, next) => {
     passport.authenticate('signup', {
         successRedirect: '/',
@@ -216,17 +265,128 @@ app.get('/isSessionOpen', (req, res) => {
                 if (err) {
                     return res.send(err);
                 }
-                console.log(req.isAuthenticated());
-               // var payload = { id: user.UserID };
+                //console.log(req.isAuthenticated());
+               // var payload = { id: user.phoneNo };
                 //var token = jwt.sign(payload, "secretOrKey");
-                req.session.touch();
-                console.log(req.session);
+                //req.session.touch();
+                //console.log(req.session);
                 res.send(user);
             });
         }
     })(req, res);
 });
  
+isExistingAccount = (phoneno) =>{
+    try{
+        return new Promise((resolve, reject) =>{
+            const db = new Database();
+            db.query("select * from `user_info` where phoneno ='" + phoneno + "' and isVerified = 1", (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                if (rows.length) {
+                    resolve(true);
+                }
+                else{
+                    resolve(false);
+                }
+            });
+        });
+    }
+    catch(e){
+        throw new Error(err);
+    }
+}
+
+StoreOTPDB = (otp, phoneno)=>{
+    try{
+        var ExpiryTime = new Date();
+        var Duration = 1; // expiry time 1 min for testing purposes
+        ExpiryTime.setMinutes(ExpiryTime.getMinutes()+Duration);
+        ExpiryTime = moment(ExpiryTime).format('YYYY-MM-DD H:mm:ss');
+
+        return new Promise((resolve, reject) => {
+            const db = new Database();
+            var isAlreadyPresent = db.query("select * from `user_info` where phoneNo ='" + phoneno + "'", (err, rows) => {
+                if(err)
+                    throw new Error(err);
+                else{
+                    if (rows.length) {
+                        //update otp and timestamp
+                            var updateQuery = "UPDATE user_info set otp='"+otp+"', OTPExpiryTime='"+ExpiryTime + "' where phoneNo= '"+phoneno+"'";
+                            db.query(updateQuery,function(err,uprows){
+                            if(err){
+                                reject(err);
+                            }
+                            else{   
+                                resolve(true);
+                            }
+                            }); 
+                        }
+                        else{
+                            var insertQuery = "INSERT INTO user_info ( phoneNo, OTP, OTPExpiryTime ) values ('"+ phoneno +"','"+ otp +"','"+ExpiryTime+"')";
+                            //console.log(insertQuery);
+                            db.query(insertQuery,function(err,insrows){
+                            if(err){
+                                reject(err);
+                            }
+                            else{                
+                                resolve(true);
+                            }
+                        }); 
+                        }
+                    }
+                });
+        })
+    }
+    catch(e){
+        throw new Error(err);
+    }
+}
+
+CheckifOTPisValid = (otp, phoneno)=>{
+    try{
+        var ExpiryTime = new Date();
+        ExpiryTime = moment(ExpiryTime).format('YYYY-MM-DD H:mm:ss');
+        return new Promise((resolve, reject) => {
+            const db = new Database();
+            var selectquery = "select * from `user_info` where phoneNo ='" + phoneno + "' and OTP='"+otp+"'";
+            //console.log(selectquery);
+            db.query(selectquery, (err, rows) => {
+                if(err){
+                    console.log(err);
+                    reject(err);
+                }
+                else{
+                    if(rows.length == 0)
+                        resolve(false);
+                    else{
+                        if(ExpiryTime < rows[0].OTPExpiryTime){
+                            var updateQuery = "UPDATE user_info set isVerified=1, OTPExpiryTime = NULL, OTP = NULL where phoneNo= '"+phoneno+"'";
+                            db.query(updateQuery,function(err,uprows){
+                            if(err){
+                                reject(err);
+                            }
+                            else{   
+                                resolve(true);
+                            }
+                            });
+                            resolve(true);
+                        }
+                        else{
+                            resolve(false);
+                        }
+                    }
+                }
+            });
+        });
+    }
+    catch(e){
+        console.log(e);
+        throw new Error(e);
+    }
+}
+
 app.get('*', (req, res) => {
     console.log("Inside *")
     res.sendFile(path.join(__dirname, 'public/index.html'));

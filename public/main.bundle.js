@@ -3,19 +3,19 @@ webpackJsonp([1,4],{
 /***/ 1100:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(528);
+module.exports = __webpack_require__(529);
 
 
 /***/ }),
 
-/***/ 115:
+/***/ 116:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_http__ = __webpack_require__(361);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(253);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_rx__ = __webpack_require__(1078);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_rx__ = __webpack_require__(511);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_rx__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Subject__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_Subject___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_Subject__);
@@ -48,19 +48,9 @@ var AuthService = (function () {
                 throw new Error("" + res.status);
             }
             else {
-                console.log(res.json());
                 return res.json();
             }
-        }).subscribe(function (obj) {
-            if (obj.user == false) {
-                console.log(obj);
-            }
-            else {
-                console.log("Signin Successful");
-                _this.isAuthenticated.next(true);
-                _this.router.navigate(['/']);
-            }
-        }, function (error) { return _this.router.navigate(['/signin']); });
+        });
     };
     AuthService.prototype.Signup = function (userid, password) {
         var _this = this;
@@ -72,15 +62,7 @@ var AuthService = (function () {
             else {
                 return res.json();
             }
-        }).subscribe(function (obj) {
-            if (obj.user == false) {
-                console.log(obj);
-            }
-            else {
-                _this.isAuthenticated.next(true);
-                _this.router.navigate(['/']);
-            }
-        }, function (error) { return _this.router.navigate(['/signup']); });
+        });
     };
     AuthService.prototype.isSessionOpen = function () {
         var _this = this;
@@ -102,6 +84,28 @@ var AuthService = (function () {
             }
         });
     };
+    AuthService.prototype.SendOTP = function (phoneno) {
+        console.log("SendOTP Auth");
+        return this.http.post('sendOTP', { phoneno: phoneno }).map(function (res) {
+            if (res.status == 400) {
+                throw new Error("Couldn't Verify. Some Error Occured" + res.status);
+            }
+            else {
+                return res.json();
+            }
+        });
+    };
+    AuthService.prototype.VerifyOTP = function (otp, phoneno) {
+        console.log("Verify OTP");
+        return this.http.post('verifyOTP', { phoneno: phoneno, otp: otp }).map(function (res) {
+            if (res.status == 400) {
+                throw new Error("Couldn't Verify. Some Error Occured" + res.status);
+            }
+            else {
+                return res.json();
+            }
+        });
+    };
     AuthService = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["c" /* Injectable */])(), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_0__angular_http__["b" /* Http */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_http__["b" /* Http */]) === 'function' && _b) || Object])
@@ -113,7 +117,7 @@ var AuthService = (function () {
 
 /***/ }),
 
-/***/ 527:
+/***/ 528:
 /***/ (function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -122,20 +126,20 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 527;
+webpackEmptyContext.id = 528;
 
 
 /***/ }),
 
-/***/ 528:
+/***/ 529:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(616);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(617);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__environments_environment__ = __webpack_require__(652);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_app_module__ = __webpack_require__(647);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__environments_environment__ = __webpack_require__(653);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_app_module__ = __webpack_require__(648);
 
 
 
@@ -148,12 +152,12 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dyna
 
 /***/ }),
 
-/***/ 646:
+/***/ 647:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(116);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -186,8 +190,8 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* Component */])({
             selector: 'app-root',
-            template: __webpack_require__(812),
-            styles: [__webpack_require__(808)]
+            template: __webpack_require__(813),
+            styles: [__webpack_require__(809)]
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */]) === 'function' && _a) || Object])
     ], AppComponent);
@@ -198,21 +202,21 @@ var AppComponent = (function () {
 
 /***/ }),
 
-/***/ 647:
+/***/ 648:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(175);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(176);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(607);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(608);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__(361);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__(253);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__auth_auth_guard_service__ = __webpack_require__(648);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__auth_auth_service__ = __webpack_require__(115);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__app_component__ = __webpack_require__(646);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__signin_signin_component__ = __webpack_require__(650);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_app_home_home_component__ = __webpack_require__(649);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__signup_signup_component__ = __webpack_require__(651);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__auth_auth_guard_service__ = __webpack_require__(649);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__auth_auth_service__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__app_component__ = __webpack_require__(647);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__signin_signin_component__ = __webpack_require__(651);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_app_home_home_component__ = __webpack_require__(650);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__signup_signup_component__ = __webpack_require__(652);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -268,13 +272,13 @@ var AppModule = (function () {
 
 /***/ }),
 
-/***/ 648:
+/***/ 649:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(253);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_router__ = __webpack_require__(113);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__auth_service__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__auth_service__ = __webpack_require__(116);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AuthGuard; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -295,20 +299,20 @@ var AuthGuard = (function () {
         this.authService = authService;
     }
     AuthGuard.prototype.canActivate = function (route, state) {
-        return true;
-        //2.) If token is not set, which means a new tab is opened, then check the node server if session is still open. if open then take action similar to 1, ese redirect to sigin page
-        // console.log("Check for session");
-        // return this.authService.isSessionOpen().take(1).map(obj => {
-        //     console.log(obj);
-        //     if (obj == true) {
-        //         return obj;
-        //     }
-        //     else {
-        //         this.router.navigate(['/signin']);
-        //         return obj;
-        //     }
-        // }
-        // );
+        var _this = this;
+        //return true;
+        // 2.) If token is not set, which means a new tab is opened, then check the node server if session is still open. if open then take action similar to 1, ese redirect to sigin page
+        console.log("Check for session");
+        return this.authService.isSessionOpen().take(1).map(function (obj) {
+            console.log(obj);
+            if (obj == true) {
+                return obj;
+            }
+            else {
+                _this.router.navigate(['/signin']);
+                return obj;
+            }
+        });
     };
     AuthGuard.prototype.canLoad = function (route) {
         return true;
@@ -331,7 +335,7 @@ var AuthGuard = (function () {
 
 /***/ }),
 
-/***/ 649:
+/***/ 650:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -355,8 +359,8 @@ var HomeComponent = (function () {
     HomeComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* Component */])({
             selector: 'app-home',
-            template: __webpack_require__(813),
-            styles: [__webpack_require__(809)]
+            template: __webpack_require__(814),
+            styles: [__webpack_require__(810)]
         }), 
         __metadata('design:paramtypes', [])
     ], HomeComponent);
@@ -366,12 +370,13 @@ var HomeComponent = (function () {
 
 /***/ }),
 
-/***/ 650:
+/***/ 651:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(113);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SigninComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -384,39 +389,61 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 var SigninComponent = (function () {
-    function SigninComponent(authService) {
+    function SigninComponent(router, authService) {
+        this.router = router;
         this.authService = authService;
     }
     SigninComponent.prototype.ngOnInit = function () {
     };
     SigninComponent.prototype.OnSignIn = function (form) {
+        var _this = this;
         var userid = form.value.userid;
         var password = form.value.password;
-        console.log(form);
-        this.authService.Signin(userid, password);
+        this.authService.Signin(userid, password).subscribe(function (obj) {
+            if (obj.user == false) {
+                _this.message = "Couldn't Signin!";
+            }
+            else {
+                //console.log("Signin Successful");
+                _this.authService.isAuthenticated.next(true);
+                _this.router.navigate(['/']);
+            }
+        }, function (error) { return _this.router.navigate(['/signin']); });
+        ;
     };
+    SigninComponent.prototype.GoToSignup = function () {
+        this.router.navigate(['/signup']);
+    };
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
+        __metadata('design:type', String)
+    ], SigninComponent.prototype, "message", void 0);
     SigninComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* Component */])({
             selector: 'app-signin',
-            template: __webpack_require__(814),
-            styles: [__webpack_require__(810)]
+            template: __webpack_require__(815),
+            styles: [__webpack_require__(811)]
         }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */]) === 'function' && _a) || Object])
+        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */]) === 'function' && _b) || Object])
     ], SigninComponent);
     return SigninComponent;
-    var _a;
+    var _a, _b;
 }());
 //# sourceMappingURL=D:/Backup/Personal stuff/FreelanceProject/JobPortal/src/signin.component.js.map
 
 /***/ }),
 
-/***/ 651:
+/***/ 652:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_rx__ = __webpack_require__(511);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_rx___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_rxjs_rx__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SignupComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -429,33 +456,83 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
+
 var SignupComponent = (function () {
-    function SignupComponent(authService) {
+    function SignupComponent(router, authService) {
+        this.router = router;
         this.authService = authService;
+        this.isPhoneVerified = false;
+        this.isSMSSent = false;
     }
     SignupComponent.prototype.ngOnInit = function () {
     };
     SignupComponent.prototype.OnSignUp = function (form) {
+        var _this = this;
         var userid = form.value.userid;
         var password = form.value.password;
-        this.authService.Signup(userid, password);
+        this.authService.Signup(userid, password).subscribe(function (obj) {
+            if (obj.user == false) {
+                _this.message = "Some Error Occured. Try Again";
+            }
+            else {
+                _this.authService.isAuthenticated.next(true);
+                _this.router.navigate(['/']);
+            }
+        }, function (error) { return _this.router.navigate(['/signup']); });
     };
+    SignupComponent.prototype.SendOTP = function () {
+        var _this = this;
+        this.authService.SendOTP(this.phoneno).subscribe(function (obj) {
+            if (obj.OTPSent) {
+                _this.isSMSSent = true;
+                _this.message = "SMS successfully sent.";
+            }
+            else {
+                _this.message = obj.message;
+            }
+        });
+    };
+    SignupComponent.prototype.VerifyOTP = function () {
+        var _this = this;
+        this.authService.VerifyOTP(this.otptext, this.phoneno).subscribe(function (obj) {
+            if (obj.OTPVerified) {
+                _this.isPhoneVerified = true;
+                _this.message = "Phone No. verified.";
+            }
+            else {
+                _this.message = obj.message;
+            }
+        });
+    };
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
+        __metadata('design:type', String)
+    ], SignupComponent.prototype, "otptext", void 0);
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
+        __metadata('design:type', String)
+    ], SignupComponent.prototype, "phoneno", void 0);
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
+        __metadata('design:type', String)
+    ], SignupComponent.prototype, "message", void 0);
     SignupComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* Component */])({
             selector: 'app-signup',
-            template: __webpack_require__(815),
-            styles: [__webpack_require__(811)]
+            template: __webpack_require__(816),
+            styles: [__webpack_require__(812)]
         }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */]) === 'function' && _a) || Object])
+        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__angular_router__["b" /* Router */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__auth_auth_service__["a" /* AuthService */]) === 'function' && _b) || Object])
     ], SignupComponent);
     return SignupComponent;
-    var _a;
+    var _a, _b;
 }());
 //# sourceMappingURL=D:/Backup/Personal stuff/FreelanceProject/JobPortal/src/signup.component.js.map
 
 /***/ }),
 
-/***/ 652:
+/***/ 653:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -468,13 +545,6 @@ var environment = {
     production: false
 };
 //# sourceMappingURL=D:/Backup/Personal stuff/FreelanceProject/JobPortal/src/environment.js.map
-
-/***/ }),
-
-/***/ 808:
-/***/ (function(module, exports) {
-
-module.exports = ""
 
 /***/ }),
 
@@ -502,28 +572,35 @@ module.exports = ""
 /***/ 812:
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"wrapper\">\n    <!-- <ng-template [ngIf]=\"!IsAuthenticated()\">\n        <nav class=\"navbar navbar-default navbar-fixed-top\" role=\"navigation\" style=\"margin-bottom: 0\">\n            <div class=\"navbar-header\">\n            </div>\n            <ul class=\"nav navbar-nav navbar-right\">\n                <!-- <li routerLinkActive=\"active\">\n                    <a [routerLink]=\"['/report']\">Report</a>\n                </li>\n                <li routerLinkActive=\"active\">\n                    <a [routerLink]=\"['/overrides']\">Overrides</a>\n                </li> \n                <li>\n                    <a style=\"cursor: pointer\" (click)=\"OnLogout()\">Logout</a>\n                </li>\n            </ul>\n          </nav>\n    </ng-template> -->\n  <div id=\"page-wrapper\" style=\"margin:100px\">\n     <!-- <ng-template [ngIf]=\"!IsAuthenticated()\">\n          <div class=\"col-md-12\">\n              <app-signin></app-signin>\n          </div>\n      </ng-template> -->\n      <router-outlet></router-outlet>\n\n  </div>\n</div>"
+module.exports = ""
 
 /***/ }),
 
 /***/ 813:
 /***/ (function(module, exports) {
 
-module.exports = "<div>Home works!</div>"
+module.exports = "<div id=\"wrapper\">\n    <!-- <ng-template [ngIf]=\"!IsAuthenticated()\">\n        <nav class=\"navbar navbar-default navbar-fixed-top\" role=\"navigation\" style=\"margin-bottom: 0\">\n            <div class=\"navbar-header\">\n            </div>\n            <ul class=\"nav navbar-nav navbar-right\">\n                <!-- <li routerLinkActive=\"active\">\n                    <a [routerLink]=\"['/report']\">Report</a>\n                </li>\n                <li routerLinkActive=\"active\">\n                    <a [routerLink]=\"['/overrides']\">Overrides</a>\n                </li> \n                <li>\n                    <a style=\"cursor: pointer\" (click)=\"OnLogout()\">Logout</a>\n                </li>\n            </ul>\n          </nav>\n    </ng-template> -->\n  <div id=\"page-wrapper\" style=\"margin:100px\">\n     <!-- <ng-template [ngIf]=\"!IsAuthenticated()\">\n          <div class=\"col-md-12\">\n              <app-signin></app-signin>\n          </div>\n      </ng-template> -->\n      <router-outlet></router-outlet>\n\n  </div>\n</div>"
 
 /***/ }),
 
 /***/ 814:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"row\">\n  <div class=\"col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2\">\n      <form (ngSubmit)=\"OnSignIn(f)\" #f=\"ngForm\">\n        <div class=\"form-group\">\n          <label for=\"userid\">Email-id</label>\n            <input type=\"userid\" \n                     id=\"userid\" \n                     class=\"form-control\" \n                     ngModel \n                     name=\"userid\" \n                     pattern=\"^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$\"\n                     required\n                     #userid = \"ngModel\"> <!-- Just like ngForm ngModel also gives information about control-->\n            <span class=\"help-block\" *ngIf=\"!userid.valid && userid.touched\">Email-ID is invalid</span>\n           \n          </div>\n          <div class=\"form-group\">\n            <label for=\"password\">Password</label>\n            <input type=\"password\" minlength=\"6\" id=\"password\" name=\"password\" class=\"form-control\" ngModel required #password = \"ngModel\">\n            <span class=\"help-block\" *ngIf=\"!password.valid && password.touched\" >Password is invalid</span>\n            <span class=\"help-block\" *ngIf=\"password.errors?.minlength && password.touched\">Password must be atleast 6 characters long</span>\n  </div>\n  <button class=\"btn btn-primary\" [disabled]=\"!f.valid && f.touched\" type=\"submit\">Sign In</button>\n  </form>\n  </div>\n</div>\n"
+module.exports = "<div>Home works!</div>"
 
 /***/ }),
 
 /***/ 815:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"row\">\n    <div class=\"col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2\">\n        <form (ngSubmit)=\"OnSignIn(f)\" #f=\"ngForm\">\n          <div class=\"form-group\">\n            <label for=\"userid\">Email-id</label>\n              <input type=\"userid\" \n                       id=\"userid\" \n                       class=\"form-control\" \n                       ngModel \n                       name=\"userid\" \n                       pattern=\"^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$\"\n                       required\n                       #userid = \"ngModel\"> <!-- Just like ngForm ngModel also gives information about control-->\n              <span class=\"help-block\" *ngIf=\"!userid.valid && userid.touched\">Email-ID is invalid</span>\n             \n            </div>\n            <div class=\"form-group\">\n              <label for=\"password\">Password</label>\n              <input type=\"password\" minlength=\"6\" id=\"password\" name=\"password\" class=\"form-control\" ngModel required #password = \"ngModel\">\n              <span class=\"help-block\" *ngIf=\"!password.valid && password.touched\" >Password is invalid</span>\n              <span class=\"help-block\" *ngIf=\"password.errors?.minlength && password.touched\">Password must be atleast 6 characters long</span>\n    </div>\n    <button class=\"btn btn-primary\" [disabled]=\"!f.valid && f.touched\" type=\"submit\">Sign In</button>\n    </form>\n    </div>\n  </div>"
+module.exports = "<div class=\"row\">\n  <div class=\"col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2\">\n      <span class=\"help-block\" >{{message}}</span>\n      <form (ngSubmit)=\"OnSignIn(f)\" #f=\"ngForm\">\n        <div class=\"form-group\">\n          <label for=\"userid\">Phone No.</label>\n            <input type=\"userid\" \n                     id=\"userid\" \n                     class=\"form-control\" \n                     ngModel \n                     name=\"userid\"\n                     required\n                     #userid = \"ngModel\"> <!-- Just like ngForm ngModel also gives information about control-->\n            <span class=\"help-block\" *ngIf=\"!userid.valid && userid.touched\">Phone No. is invalid</span>\n           \n          </div>\n          <div class=\"form-group\">\n            <label for=\"password\">Password</label>\n            <input type=\"password\" id=\"password\" name=\"password\" class=\"form-control\" ngModel required #password = \"ngModel\">\n            <span class=\"help-block\" *ngIf=\"!password.valid && password.touched\" >Password is required</span>\n  </div>\n  <button class=\"btn btn-primary\" [disabled]=\"!f.valid && f.touched\" type=\"submit\">Sign In</button>\n  <button class=\"btn btn-default\" (click) = \"GoToSignup()\" type=\"button\">New User? Sign up</button>\n  </form>\n  </div>\n</div>\n<!--Email Pattern check pattern=\"^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$\"-->"
+
+/***/ }),
+
+/***/ 816:
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"row\">\n  <div class=\"col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2\">\n      <span class=\"error-block\" >{{message}}</span>\n        <form (ngSubmit)=\"OnSignUp(f)\" #f=\"ngForm\">\n          <div class=\"form-group\">\n            <label for=\"userid\">Phone No</label>\n              <input type=\"userid\" \n                       id=\"userid\" \n                       class=\"form-control\" \n                       name=\"userid\"\n                       required\n                       [(ngModel)]=\"phoneno\"\n                       #userid = \"ngModel\"> <!-- Just like ngForm ngModel also gives information about control-->\n              <span class=\"help-block\" *ngIf=\"!userid.valid && userid.touched\">Phone No. is invalid</span>\n            </div>\n\n            <div class=\"form-group\" *ngIf=\"isSMSSent\">\n                <label for=\"otp\">OTP</label>\n                  <input type=\"text\" \n                           id=\"otp\" \n                           class=\"form-control\" \n                           name=\"otp\"\n                           required\n                           [(ngModel)]=\"otptext\"\n                           #otp = \"ngModel\"> <!-- Just like ngForm ngModel also gives information about control-->\n                  <span class=\"help-block\" *ngIf=\"!otp.valid && otp.touched\">OTP is invalid</span>\n                </div>\n            \n\n              <button class=\"btn btn-warning\" *ngIf=\"!isSMSSent\" (click)=\"SendOTP()\" type='button'>Continue</button>\n              <button class=\"btn btn-warning\" *ngIf=\"isSMSSent && !isPhoneVerified\" (click)=\"VerifyOTP()\" type='button'>Verify OTP</button>\n            \n            <div class=\"form-group\" *ngIf=\"isPhoneVerified\">\n              <label for=\"password\">Password</label>\n              <input type=\"password\" minlength=\"6\" id=\"password\" name=\"password\" class=\"form-control\" ngModel required #password = \"ngModel\">\n              <span class=\"help-block\" *ngIf=\"!password.valid && password.touched\" >Password is invalid</span>\n              <span class=\"help-block\" *ngIf=\"password.errors?.minlength && password.touched\">Password must be atleast 6 characters long</span>\n            </div>\n            <button class=\"btn btn-primary\" *ngIf=\"isPhoneVerified\" [disabled]=\"!f.valid && f.touched\" type=\"submit\">Sign Up</button>\n          </form>\n    </div>\n</div>\n  <!-- pattern=\"^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$\" -->"
 
 /***/ })
 

@@ -1,26 +1,44 @@
 <div class="row">
-    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
-        <form (ngSubmit)="OnSignIn(f)" #f="ngForm">
+  <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+      <span class="help-block" >{{message}}</span>
+        <form (ngSubmit)="OnSignUp(f)" #f="ngForm">
           <div class="form-group">
-            <label for="userid">Email-id</label>
+            <label for="userid">Phone No</label>
               <input type="userid" 
                        id="userid" 
                        class="form-control" 
-                       ngModel 
-                       name="userid" 
-                       pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                       name="userid"
                        required
+                       [(ngModel)]="phoneno"
                        #userid = "ngModel"> <!-- Just like ngForm ngModel also gives information about control-->
-              <span class="help-block" *ngIf="!userid.valid && userid.touched">Email-ID is invalid</span>
-             
+              <span class="help-block" *ngIf="!userid.valid && userid.touched">Phone No. is invalid</span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group" *ngIf="isSMSSent">
+                <label for="otp">OTP</label>
+                  <input type="text" 
+                           id="otp" 
+                           class="form-control" 
+                           name="otp"
+                           required
+                           [(ngModel)]="otptext"
+                           #otp = "ngModel"> <!-- Just like ngForm ngModel also gives information about control-->
+                  <span class="help-block" *ngIf="!otp.valid && otp.touched">OTP is invalid</span>
+                </div>
+            
+
+              <button class="btn btn-warning" *ngIf="!isSMSSent" (click)="SendOTP()" type='button'>Continue</button>
+              <button class="btn btn-warning" *ngIf="isSMSSent && !isPhoneVerified" (click)="VerifyOTP()" type='button'>Verify OTP</button>
+            
+            <div class="form-group" *ngIf="isPhoneVerified">
               <label for="password">Password</label>
               <input type="password" minlength="6" id="password" name="password" class="form-control" ngModel required #password = "ngModel">
               <span class="help-block" *ngIf="!password.valid && password.touched" >Password is invalid</span>
               <span class="help-block" *ngIf="password.errors?.minlength && password.touched">Password must be atleast 6 characters long</span>
+            </div>
+            <button class="btn btn-primary" *ngIf="isPhoneVerified" [disabled]="!f.valid && f.touched" type="submit">Sign Up</button>
+            <button class="btn btn-primary" (click)="OnLoginPage()" type='button'>Login</button>
+          </form>
     </div>
-    <button class="btn btn-primary" [disabled]="!f.valid && f.touched" type="submit">Sign In</button>
-    </form>
-    </div>
-  </div>
+</div>
+  <!-- pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" -->

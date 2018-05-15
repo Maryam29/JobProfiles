@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Input} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../auth/auth.service';
 import { concat } from 'rxjs/operator/concat';
+import { Router } from '@angular/router';
+import 'rxjs/rx';
 
 @Component({
   selector: 'app-signup',
@@ -9,8 +11,13 @@ import { concat } from 'rxjs/operator/concat';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
+  @Input() otptext:string;
+  @Input() phoneno:string;
+  @Input() message:string;
 
-  constructor(private authService: AuthService) { }
+  isPhoneVerified = false;
+  isSMSSent = false;
+  constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
   }
@@ -18,6 +25,41 @@ export class SignupComponent implements OnInit {
   OnSignUp(form:NgForm){
     const userid = form.value.userid;
     const password = form.value.password;
-    this.authService.Signup(userid, password);
+    this.authService.Signup(userid, password).subscribe(obj => {
+      if(obj.user == false){
+        this.message = "Some Error Occured. Try Again";
+      }
+      else{
+          this.authService.isAuthenticated.next(true);
+          this.router.navigate(['/']);
+      }
+  }, error => this.router.navigate(['/signup']));
+  }
+
+  SendOTP(){
+    this.authService.SendOTP(this.phoneno).subscribe(obj =>{
+        if(obj.OTPSent){
+        this.isSMSSent = true;
+        this.message = "SMS successfully sent.";
+      }
+      else{
+        this.message = obj.message;
+      }
+    });
+  }
+
+  VerifyOTP(){
+    this.authService.VerifyOTP(this.otptext,this.phoneno).subscribe(obj =>{
+      if(obj.OTPVerified){
+        this.isPhoneVerified = true;
+        this.message = "Phone No. verified.";
+      }
+      else{
+        this.message = obj.message;
+      }
+    });
+  }
+  OnLoginPage(){
+    this.router.navigate(['/signin']);
   }
 }

@@ -6,7 +6,7 @@ class Database {
             host: 'localhost',
             user: 'root',
             password: '',
-            database: 'pac',
+            database: 'crewmanagementportal',
             dateStrings: 'date'
             }
         this.connection = mysql.createConnection( config );
@@ -23,7 +23,6 @@ class Database {
         query( sql, args ) {
         return new Promise( ( resolve, reject ) => {
             this.connection.query( sql, args, ( err, rows ) => {
-                console.log(rows);
                 if ( err )
                     return reject( err );
                 resolve( rows );
