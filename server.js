@@ -12,7 +12,7 @@ var dateFormat = require('dateformat');
 const http = require('http');
 const path = require('path');
 const _ = require('lodash');
-const { Database } = require('./server/config.js');
+const Database = require('./server/config.js');
 var LocalStrategy   = require('passport-local').Strategy;
 var otpGenerator = require('otp-generator');
 const Nexmo = require('nexmo');
@@ -38,7 +38,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        maxAge: 2 * 60 * 1000 // use expires instead of maxAge
+        maxAge: 30 * 60 * 1000 // use expires instead of maxAge
     },
     rolling: true
 }));
@@ -67,25 +67,31 @@ app.use(passport.session()); // persistent login sessions
         passReqToCallback: true
     },
     (req, username, password, done) => { // verification function
-            const db = new Database();
-            console.log(password);
 
-            db.query("select * from `user_info` where phoneNo='" + username + "'", (err, rows) => {
-                console.log(err);
-                console.log(rows);
-                if (err) {
-                    return done(err);
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+            
+            try{
+                var user = {phoneNo:username,isVerified:true}
+                var rows = await Database.findOne('ApplicantInfo',user);
+                if (rows && rows.length) {
+                    if (!(rows.password == md5(password))) {
+                        return done(null, false,  'Wrong password.'); //create the loginMessage and save it to session as flashdata
+                    }
+                    else{
+                        return done(null, rows);
+                    }
                 }
-                if (!rows.length) {
+                else{
                     return done(null, false,  'No user found.');
                 }
-                if (!(rows[0].password == md5(password))) {
-                    return done(null, false,  ' Wrong password.'); //create the loginMessage and save it to session as flashdata
-                }
-                return done(null, rows[0]);
-                // all is well, return successful user
-            });
-        }));
+            }
+            catch(e){
+                return done(e);
+            }
+        });
+    }));
 
 
     passport.use('signup', new LocalStrategy({
@@ -101,43 +107,51 @@ app.use(passport.session()); // persistent login sessions
         process.nextTick(function() {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
-            const db = new Database();
                 //if there is no user with that email,create the user
             var newUserMysql = new Object();
             newUserMysql.phoneNo  = phoneNo;
             newUserMysql.password = md5(password); // use the generateHash function in our user model
-            
-            var insertQuery = "UPDATE user_info set password ='" +md5(password) +"' where phoneNo = '"+phoneNo+"'";
-            db.query(insertQuery,function(err,rows){
-                if(err){
-                    return done(err);
+            //console.log(newUserMysql);
+            Database.connectoToServer(async(err)=>{
+                if(err)
+                throw err;
+                
+                try{
+                    var user = {phoneNo:phoneNo,isVerified:true}
+                    var newobj ={
+                        $set:{
+                            password:md5(password)
+                        }
+                    }
+                    var rows = await Database.updateOne('ApplicantInfo',user,newobj);
+                    console.log(rows);
+                    if (rows>0) {
+                        return done(null, newUserMysql);
+                    }
+                    else{
+                        return done(null, false,  'No user found.');
+                    }
                 }
-                else{
-                    return done(null, newUserMysql);
+                catch(e){
+                    return done(e);
                 }
-            
             });
     });
 }));
-//app.use(flash()); // use connect-flash for flash messages stored in session
+app.get('/logout', (req, res) => {
+    console.log("Inside Logout");
 
-// app.get('/DrugDetails/:gcn/:type', ensureAuthenticated, async (req, res) => {
-//     var gcn = req.params.gcn;
-//     var type = req.params.type;
-//     if (gcn == null || type == null) {
-//         return res.status(400).send();
-//     }
-//     if (type.toUpperCase() === "Generic".toUpperCase())
-//         type = "G";
-//     else
-//         type = "B";
-//     const db = new Database();
-//     var sql_DrugDetail = "SELECT * from fdb where GCN='" + gcn + "'  AND DrugType='" + type + "' LIMIT 0,1";
-//     var rows = await db.query(sql_DrugDetail);
-//     //Database.close();
-//     return res.send(rows);
-// });
- 
+    console.log(req.session.cookie.expires.toString());
+    console.log(req.user);
+
+    req.logout();
+    req.session.destroy();
+    console.log("Logout"+req.isAuthenticated());
+
+    console.log(req.user);
+    return res.send();
+})
+
 /* Check for Session */
 app.get('/isSessionOpen', (req, res) => {
     console.log("Inside Session Open")
@@ -189,6 +203,7 @@ app.get('/isSessionOpen', (req, res) => {
     })(req, res);
 });
  
+
   /* Handle Registration POST */
   /* Handle Login POST */
 
@@ -201,6 +216,7 @@ app.get('/isSessionOpen', (req, res) => {
         else{
             var otp = otpGenerator.generate(6, { upperCase: true, specialChars: false });
             StoreOTPDB(otp, phoneno).then((isSuccessfullyStored)=>{
+                console.log(isSuccessfullyStored);
                 if(isSuccessfullyStored){
                     // var message = "Use this One Time Password to complete the registration:"+ otp;
                 //     nexmo.message.sendSms(
@@ -249,6 +265,7 @@ app.post('/verifyOTP', (req, res) => {
         failureFlash: true
     }, (err, user, info) => {
         if (err) {
+            console.log(err);
             return res.status(400).json({
                 message: info,
                 user: user
@@ -275,107 +292,149 @@ app.post('/verifyOTP', (req, res) => {
         }
     })(req, res);
 });
- 
+
 isExistingAccount = (phoneno) =>{
+    console.log("isExistingAccount");
     try{
         return new Promise((resolve, reject) =>{
-            const db = new Database();
-            db.query("select * from `user_info` where phoneno ='" + phoneno + "' and isVerified = 1", (err, rows) => {
-                if (err) {
-                    reject(err);
+            Database.connectoToServer(async(err)=>{
+                if(err)
+                throw err;
+                
+                try{
+                    var user = {
+                        phoneNo:phoneno,
+                        isVerified:true,
+                        password:{
+                            $exists:true,
+                            $ne:null
+                        }
+                    }
+                    var rows = await Database.findOne('ApplicantInfo',user);
+                    if (rows && rows.length) {
+                        resolve(true);
+                    }
+                    else{
+                        resolve(false);
+                    }
                 }
-                if (rows.length) {
-                    resolve(true);
-                }
-                else{
-                    resolve(false);
+                catch(e){
+                    reject(e);
                 }
             });
         });
     }
     catch(e){
-        throw new Error(err);
+        throw new Error(e);
     }
 }
 
-StoreOTPDB = (otp, phoneno)=>{
+StoreOTPDB = async(otp, phoneno)=>{
+    console.log("StoreOTPDB");
     try{
         var ExpiryTime = new Date();
         var Duration = 1; // expiry time 1 min for testing purposes
         ExpiryTime.setMinutes(ExpiryTime.getMinutes()+Duration);
-        ExpiryTime = moment(ExpiryTime).format('YYYY-MM-DD H:mm:ss');
+        ExpiryTime = moment(ExpiryTime).toISOString();
 
-        return new Promise((resolve, reject) => {
-            const db = new Database();
-            var isAlreadyPresent = db.query("select * from `user_info` where phoneNo ='" + phoneno + "'", (err, rows) => {
-                if(err)
-                    throw new Error(err);
-                else{
-                    if (rows.length) {
-                        //update otp and timestamp
-                            var updateQuery = "UPDATE user_info set otp='"+otp+"', OTPExpiryTime='"+ExpiryTime + "' where phoneNo= '"+phoneno+"'";
-                            db.query(updateQuery,function(err,uprows){
-                            if(err){
-                                reject(err);
-                            }
-                            else{   
-                                resolve(true);
-                            }
-                            }); 
-                        }
-                        else{
-                            var insertQuery = "INSERT INTO user_info ( phoneNo, OTP, OTPExpiryTime ) values ('"+ phoneno +"','"+ otp +"','"+ExpiryTime+"')";
-                            //console.log(insertQuery);
-                            db.query(insertQuery,function(err,insrows){
-                            if(err){
-                                reject(err);
-                            }
-                            else{                
-                                resolve(true);
-                            }
-                        }); 
-                        }
+        return new Promise(async(resolve, reject) => {
+            Database.connectoToServer(async(err)=>{
+                var user = {phoneNo:phoneno};
+                var rows = await Database.findOne('ApplicantInfo',user);
+                if(!rows || rows.length == 0){
+                    var newobj = {
+                        phoneNo: phoneno,
+                        OTP:otp,
+                        OTPExpiryTime:ExpiryTime
                     }
-                });
-        })
-    }
-    catch(e){
-        throw new Error(err);
-    }
-}
-
-CheckifOTPisValid = (otp, phoneno)=>{
-    try{
-        var ExpiryTime = new Date();
-        ExpiryTime = moment(ExpiryTime).format('YYYY-MM-DD H:mm:ss');
-        return new Promise((resolve, reject) => {
-            const db = new Database();
-            var selectquery = "select * from `user_info` where phoneNo ='" + phoneno + "' and OTP='"+otp+"'";
-            //console.log(selectquery);
-            db.query(selectquery, (err, rows) => {
-                if(err){
-                    console.log(err);
-                    reject(err);
+                    console.log("insert");
+                    var rows = await Database.insertOne('ApplicantInfo',newobj);
+                    if(rows)
+                    resolve(true);
+                    else
+                    resolve(false);
                 }
                 else{
-                    if(rows.length == 0)
-                        resolve(false);
+                    var newobj={
+                        $set:{
+                            OTP:otp,
+                            OTPExpiryTime:ExpiryTime
+                        }
+                    }
+                    console.log("update");
+                    var rows = await Database.updateOne('ApplicantInfo',user,newobj);
+                    if(rows > 0){
+                        resolve(true);
+                    }
                     else{
-                        if(ExpiryTime < rows[0].OTPExpiryTime){
-                            var updateQuery = "UPDATE user_info set isVerified=1, OTPExpiryTime = NULL, OTP = NULL where phoneNo= '"+phoneno+"'";
-                            db.query(updateQuery,function(err,uprows){
-                            if(err){
-                                reject(err);
+                        resolve(false);
+                    }
+                }
+            });
+        });
+    }
+    catch(e){
+           reject(e);
+        }
+}
+
+app.get('/check',async(req,res) => {
+    try{
+        var ExpiryTime = new Date();
+        var Duration = 1; // expiry time 1 min for testing purposes
+        ExpiryTime.setMinutes(ExpiryTime.getMinutes()+Duration);
+        ExpiryTime = moment(ExpiryTime).toISOString();
+        phoneno='9425645230';
+        otp='4365';
+        Database.connectoToServer(async(err)=>{
+            
+        });
+    }
+    catch(e){
+           throw e;
+        }
+})
+
+CheckifOTPisValid = async(otp, phoneno)=>{
+    console.log("CheckifOTPisValid");
+    try{
+        var CurrentTime = new Date();
+        CurentTime = moment(CurrentTime).format('YYYY-MM-DD H:mm:ss');
+
+        return new Promise(async(resolve, reject) => {
+            Database.connectoToServer(async(err)=>{
+                var user = {phoneNo:phoneno,OTP:otp};
+                console.log(user);
+                var rows = await Database.findOne('ApplicantInfo',user);
+                console.log(rows);
+                if(!rows || rows.length == 0)
+                resolve(false);
+                else{
+                    OTPExpiryTime = moment(rows.OTPExpiryTime).format('YYYY-MM-DD H:mm:ss');
+                    if(CurentTime < OTPExpiryTime){
+                        var oldobj = {
+                            phoneNo:phoneno
+                        }
+                        var newobj={
+                            $set:{
+                                isVerified:true
+                            },
+                            $unset:{
+                                OTP:1,
+                                OTPExpiryTime:1
                             }
-                            else{   
-                                resolve(true);
-                            }
-                            });
-                            resolve(true);
+                        }
+                        console.log("update")
+                        var rows = await Database.updateOne('ApplicantInfo',oldobj,newobj);
+                        if(rows > 0){
+                            resolve(true)
                         }
                         else{
                             resolve(false);
                         }
+                    }
+                    else{
+                        resolve(false);
                     }
                 }
             });
@@ -386,6 +445,56 @@ CheckifOTPisValid = (otp, phoneno)=>{
         throw new Error(e);
     }
 }
+
+app.get('/getformcontrols',async(req,res) => {
+   Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+            
+            try{
+                var rows = await Database.getAll('Formcontrols')
+                console.log(rows);
+                return res.send(rows);
+            }
+            catch(e){
+                console.log(e);
+                throw new Error(e);
+            }
+        });
+})
+
+
+app.post('/saveForm', (req, res) => {
+    console.log("SaveForm");
+    FormFields = req.body.FormFields;
+    ModifiedFields = new Array();
+    for(var i=0;i<FormFields.length;i++){
+        ModifiedFields[i] = {};
+        ModifiedFields[i].type = FormFields[i].type;
+        ModifiedFields[i].optionCount = FormFields[i].optionCount;
+        labelname =  FormFields[i].label;
+        ModifiedFields[i][labelname] = FormFields[i].options;
+    }
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+            var FormObj = {
+                FormTitle : req.body.FormTitle,
+                FormFields:ModifiedFields
+            }
+            var rows = await Database.insertOne('Forms',FormObj);
+            console.log(rows);
+            if(rows)
+            res.send(true);
+            else
+            res.send(false);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
 
 app.get('*', (req, res) => {
     console.log("Inside *")

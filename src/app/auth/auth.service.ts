@@ -78,12 +78,12 @@ export class AuthService {
              }
            })
     }
-    // Logout() {
-    //     return this.http.get('logout').subscribe(obj => {
-    //         this.router.navigate(['/signin']);
-    //         console.log("Logged out successfully");
-    //         this.isAuthenticated.next(false);
-    //     })
-    // }
+    Logout() {
+        return this.http.get('logout').subscribe(obj => {
+            console.log("Logged out successfully");
+            this.isAuthenticated.next(false);
+            this.router.navigate(['/signin']);
+        })
+    }
 
 }

@@ -1,50 +1,77 @@
-const mysql = require("mysql");
+const MongoClient = require("mongodb").MongoClient;
+var _db;
 
-class Database {
-    constructor() {
-        const  config = {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'crewmanagementportal',
-            dateStrings: 'date'
-            }
-        this.connection = mysql.createConnection( config );
-        this.connection.connect((err) => {
-        if(!err){
-            console.log("Database is connected");
-        }
-        else{
-            throw new Error(err);
-        }
-    });
-    }
+const connectoToServer = (callback)=>{
+var url = 'mongodb://localhost:27017/';
+MongoClient.connect(url,(err,db)=>{
+    _db = db.db("crewmanagementportal");
+    return callback(err);
+});
+}
 
-        query( sql, args ) {
-        return new Promise( ( resolve, reject ) => {
-            this.connection.query( sql, args, ( err, rows ) => {
-                if ( err )
-                    return reject( err );
-                resolve( rows );
-            } );
-        } );
+const getDb = ()=>{
+    return _db;
+}
+
+const insertOne = async(col, obj)=>{
+    try{
+        const results = await _db.collection(col).insertOne(obj);
+        //console.log(results.ops[0])
+        return results.ops[0];
     }
-    // async query( sql, args ) {
-    // await this.connection.query( sql, args, async( err, rows ) => {
-    //             if ( err )
-    //                 throw new Error(err);
-    //             return rows;
-    //         } );
-    //     return ("Inside Config", rows);
-    // }
-    async close() {
-            this.connection.end( err => {
-                if ( err )
-                    throw new Error(err);
-                return rows;
-            } );
+    catch(e){
+        throw e;
     }
 }
+
+
+const updateOne = async(col,oldval, newval)=>{
+    try{
+        const results = await _db.collection(col).updateOne(oldval,newval);
+        //console.log(results.result.nModified);
+        return results.result.nModified;
+    }
+    catch(e){
+        throw e;
+    }
+}
+
+
+const getAll = async(col)=>{
+    try {
+        const results = await _db.collection(col).find().toArray()
+        return results
+    } catch (e) {
+        throw e
+    }
+}
+
+const findOne = async(col, id)=>{
+    try {
+        const results = await _db.collection(col).findOne(id);
+        return results
+    } catch (e) {
+        throw e
+    }
+}
+
+const findAll = async(col,id)=>{
+    try {
+        const results = await _db.collection(col).find(id).toArray();
+        return results
+    } catch (e) {
+        throw e
+    }
+}
+
+const disconnectDB = () => _db.close()
+
 module.exports = {
-Database: Database
-};
+    connectoToServer,
+    getDb,
+    insertOne,
+    updateOne,
+    getAll,
+    findOne,
+    findAll
+    };
