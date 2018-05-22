@@ -20,9 +20,8 @@ export class CustomFormService {
         })
     }
 
-    SaveForm(FormFields,FormTitle){
-        console.log("service")
-        return this.http.post('saveForm',{FormFields:FormFields, FormTitle}).map(res =>{
+    SaveForm(FormFields,FormTitle, FormType){
+        return this.http.post('saveForm',{FormFields:FormFields, FormTitle, FormType}).map(res =>{
             if(res.status == 400){
                 throw new Error("Couldn't Save Forms");
             }
@@ -35,4 +34,51 @@ export class CustomFormService {
         })
     }
 
+    GetForm(type){
+        //console.log("Get form");
+        return this.http.post('getForm',{type}).map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Forms");
+            }
+            else{
+                console.log(res);
+                return res.json();
+            }
+        });
+    }
+
+    GetAllForms(){
+        //console.log("Get form");
+        return this.http.get('getAllForms').map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Forms");
+            }
+            else{
+                return res.json();
+            }
+        });
+    }
+
+    GetAllApplicants(){
+        return this.http.get('getAllApplicants').map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Applicants List");
+            }
+            else{
+                return res.json();
+            }
+        });
+    }
+
+    SaveApplicantForm(ApplicantDetails){
+        return this.http.post('saveApplicantData',ApplicantDetails).map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Forms");
+            }
+            else{
+                console.log(res);
+                return res.json();
+            }
+        });
+    }
 }

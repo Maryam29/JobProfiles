@@ -3,8 +3,17 @@
             <div class="navbar-header">
             </div>
             <ul class="nav navbar-nav navbar-right">
-                <li routerLinkActive="active">
+                <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                     <a [routerLink]="['createform']">Create Form</a>
+                </li>
+                <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
+                    <a [routerLink]="['viewforms']">View Form</a>
+                </li>
+                <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
+                        <a [routerLink]="['applicants']">Applicants</a>
+                    </li>
+                <li routerLinkActive="active" *ngIf="UserType != 'Admin'">
+                    <a [routerLink]="['form']">Fill Form</a>
                 </li>
                 <li>
                     <a style="cursor: pointer" (click)="OnLogout()">Logout</a>
@@ -13,6 +22,5 @@
           </nav>
   <div id="page-wrapper" style="margin:100px">
       <router-outlet></router-outlet>
-
   </div>
 </div>

@@ -1,0 +1,64 @@
+<form (ngSubmit)="onSave()" *ngIf="fieldcount >0" [formGroup]="ProfileForm">
+    <h3>{{FormTitle}}</h3>
+  <div formArrayName="customcontrols" *ngFor="let item of ProfileForm.get('customcontrols').controls; let i = index;">
+   <div [ngSwitch]="FormFields[i].type">
+
+      <!-----------------------For Radio Button------------------>
+      <div *ngSwitchCase="'Radio'" class="form-group">
+        <label>
+          {{FormFields[i].label}}
+          <div *ngFor="let option of FormFields[i].options; let j = index" >
+            <!-- <label class="radio-inline">{{option}}</label> -->
+            {{option}}
+              <input type="radio" [formControlName]="i" [value]="option">
+          </div>
+        </label>
+      </div>
+      <!-----------------------End Radio Button------------------>
+
+      <!-----------------------For Checkbox Button------------------>
+      <div *ngSwitchCase="'Checkbox'">
+        <label [for]="i">
+          {{FormFields[i].label}}
+          <div *ngFor="let option of FormFields[i].options; let j = index" [formArrayName]="i">
+            {{option}}
+              <input type="checkbox" [formControlName]="j">
+          </div>
+        </label>
+      </div>
+      <!-----------------------End Checkbox Button------------------>
+
+      <!-----------------------For Textbox Button------------------>
+      <div *ngSwitchCase="'Textbox'" class="form-group">
+        <label [for]="i">
+          {{FormFields[i].label}}
+          <input type="text" [formControlName]="i">
+        </label>
+      </div>
+      <!----------------------End Textbox Button------------------>
+
+      <!-----------------------For Paragraph Button------------------>
+      <div *ngSwitchCase="'Textarea'" class="form-group">
+        <label [for]="i">
+          {{FormFields[i].label}}
+          <textarea [formControlName]="i"></textarea>
+        </label>
+      </div>
+      <!----------------------End Paragraph Button------------------>
+
+      <!-----------------------For Dropbox Button------------------>
+      <div *ngSwitchCase="'Dropdown'" class="form-group">
+        <label [for]="i">
+          {{FormFields[i].label}}
+          <select [formControlName]="i">
+              <option selected disabled>Choose one</option>
+            <option *ngFor="let option of FormFields[i].options;let j=index">{{option}}</option>
+          </select>
+        </label>
+      </div>
+       <!----------------------End Dropbox Button------------------>
+    </div>
+  </div>
+  <br>
+  <button [disabled]="!ProfileForm.valid" class="btn btn-primary" type="submit">Save</button>
+</form>

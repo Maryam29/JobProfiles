@@ -54,13 +54,24 @@ app.use(passport.session()); // persistent login sessions
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
         console.log("Inside serialization");
-        done(null, user.phoneNo);
+        done(null, user._id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
         console.log("Inside deserialization");
-        done(null,{phoneNo:1,name:"maryam"});
+        try{
+            Database.connectoToServer(async(err)=>{
+                var rows = await Database.findOne('ApplicantInfo',{_id:ObjectID(id)});
+                //console.log(rows);
+                done(null,rows);
+            })
+        }
+        catch(e){
+            done(null);
+        }
+        
+        
     });
 
     passport.use('login', new LocalStrategy({
@@ -75,7 +86,8 @@ app.use(passport.session()); // persistent login sessions
             try{
                 var user = {phoneNo:username,isVerified:true}
                 var rows = await Database.findOne('ApplicantInfo',user);
-                if (rows && rows.length) {
+                //console.log(rows);
+                if (rows) {
                     if (!(rows.password == md5(password))) {
                         return done(null, false,  'Wrong password.'); //create the loginMessage and save it to session as flashdata
                     }
@@ -103,14 +115,16 @@ app.use(passport.session()); // persistent login sessions
     function(req,userid, password, done) {
         phoneNo = req.body.userid;
         password = req.body.password;
+        type = req.body.type;
                  // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
                 //if there is no user with that email,create the user
-            var newUserMysql = new Object();
-            newUserMysql.phoneNo  = phoneNo;
-            newUserMysql.password = md5(password); // use the generateHash function in our user model
+            // var newUserMysql = new Object();
+            // newUserMysql.phoneNo  = phoneNo;
+            // newUserMysql.type = type;
+            // newUserMysql.password = md5(password); // use the generateHash function in our user model
             //console.log(newUserMysql);
             Database.connectoToServer(async(err)=>{
                 if(err)
@@ -120,16 +134,20 @@ app.use(passport.session()); // persistent login sessions
                     var user = {phoneNo:phoneNo,isVerified:true}
                     var newobj ={
                         $set:{
-                            password:md5(password)
+                            password:md5(password),
+                            type:type
                         }
                     }
-                    var rows = await Database.updateOne('ApplicantInfo',user,newobj);
-                    console.log(rows);
-                    if (rows>0) {
-                        return done(null, newUserMysql);
+                    
+                    var rows = await Database.findOneAndUpdate('ApplicantInfo',user,newobj);
+                    //console.log("signup");
+                    //console.log(rows.value);
+
+                    if (rows.value) {
+                        return done(null, rows.value);
                     }
                     else{
-                        return done(null, false,  'No user found.');
+                        return done(null, false,  'someErrorOccured');
                     }
                 }
                 catch(e){
@@ -138,28 +156,30 @@ app.use(passport.session()); // persistent login sessions
             });
     });
 }));
+
+
 app.get('/logout', (req, res) => {
     console.log("Inside Logout");
 
-    console.log(req.session.cookie.expires.toString());
-    console.log(req.user);
+    //console.log(req.session.cookie.expires.toString());
+    //console.log(req.user);
 
     req.logout();
     req.session.destroy();
-    console.log("Logout"+req.isAuthenticated());
+    //console.log("Logout"+req.isAuthenticated());
 
-    console.log(req.user);
+    //console.log(req.user);
     return res.send();
 })
 
 /* Check for Session */
 app.get('/isSessionOpen', (req, res) => {
-    console.log("Inside Session Open")
-    console.log(req.session.cookie.expires.toString());
-    console.log(req.isAuthenticated());
-    console.log(req.user);
+    // console.log("Inside Session Open")
+    // console.log(req.session.cookie.expires.toString());
+    // console.log(req.isAuthenticated());
+    // console.log(req.user);
     if (req.isAuthenticated()) {
-        return res.send({ isSessionOpen: true });
+        return res.send({ isSessionOpen: true, sessionData:req.user });
     }
     else {
         return res.send({ isSessionOpen: false });
@@ -168,12 +188,12 @@ app.get('/isSessionOpen', (req, res) => {
 
   /* Handle Login POST */
   app.post('/login', (req, res, next) => {
-      console.log(req.body);
+      //console.log(req.body);
       passport.authenticate('login', {
         successRedirect: '/',
         failureFlash: true
     }, (err, user, info) => {
-        console.log(info);
+        //console.log(info);
         if (err) {
             return res.status(400).json({
                 message: info,
@@ -191,11 +211,11 @@ app.get('/isSessionOpen', (req, res) => {
                 if (err) {
                     return res.send(err);
                 }
-                console.log("Inside Login");
-                console.log(req.isAuthenticated());
-                console.log(req.user);
-                console.log(req.session);
-                console.log(req.session.cookie.expires.toString());
+                //console.log("Inside Login");
+                //console.log(req.isAuthenticated());
+                //console.log(req.user);
+                //console.log(req.session.passport.user);
+                //console.log(req.session.cookie.expires.toString());
                 res.send(user);
             });
             
@@ -206,8 +226,46 @@ app.get('/isSessionOpen', (req, res) => {
 
   /* Handle Registration POST */
   /* Handle Login POST */
+  app.post('/register', (req, res, next) => {
+    passport.authenticate('signup', {
+        successRedirect: '/',
+        failureRedirect: '/register',
+        failureFlash: true
+    }, (err, user, info) => {
+        if (err) {
+            //console.log(err);
+            //console.log(user);
+            //console.log(info);
+            return res.status(400).json({
+                message: info,
+                user: user
+            });
+        }
+        else if(!user){
+            return res.status(201).json({
+                message: info,
+                user: user
+            });
+        }
+        else {
+            req.login(user, { session: true }, (err) => {
+                //console.log(err);
+                if (err) {
+                    return res.send(err);
+                }
+                //console.log(req.isAuthenticated());
+               // var payload = { id: user.phoneNo };
+                //var token = jwt.sign(payload, "secretOrKey");
+                //req.session.touch();
+                //console.log(req.session);
+                res.send(user);
+            });
+        }
+    })(req, res);
+});
 
-  app.post('/sendOTP', async (req, res) => {
+
+app.post('/sendOTP', async (req, res) => {
     const phoneno = req.body.phoneno;
     isExistingAccount(phoneno).then((isVerified)=>{
         if(isVerified){
@@ -216,7 +274,7 @@ app.get('/isSessionOpen', (req, res) => {
         else{
             var otp = otpGenerator.generate(6, { upperCase: true, specialChars: false });
             StoreOTPDB(otp, phoneno).then((isSuccessfullyStored)=>{
-                console.log(isSuccessfullyStored);
+                //console.log(isSuccessfullyStored);
                 if(isSuccessfullyStored){
                     // var message = "Use this One Time Password to complete the registration:"+ otp;
                 //     nexmo.message.sendSms(
@@ -258,44 +316,9 @@ app.post('/verifyOTP', (req, res) => {
     .catch(e => res.send({OTPVerified: false, message: "Some Error Occured. Try Again"}));
 });
 
-  app.post('/register', (req, res, next) => {
-    passport.authenticate('signup', {
-        successRedirect: '/',
-        failureRedirect: '/register',
-        failureFlash: true
-    }, (err, user, info) => {
-        if (err) {
-            console.log(err);
-            return res.status(400).json({
-                message: info,
-                user: user
-            });
-        }
-        else if(!user){
-            return res.status(201).json({
-                message: info,
-                user: user
-            });
-        }
-        else {
-            req.login(user, { session: true }, (err) => {
-                if (err) {
-                    return res.send(err);
-                }
-                //console.log(req.isAuthenticated());
-               // var payload = { id: user.phoneNo };
-                //var token = jwt.sign(payload, "secretOrKey");
-                //req.session.touch();
-                //console.log(req.session);
-                res.send(user);
-            });
-        }
-    })(req, res);
-});
-
 isExistingAccount = (phoneno) =>{
-    console.log("isExistingAccount");
     try{
+        //console.log("isExistingAccount");
         return new Promise((resolve, reject) =>{
             Database.connectoToServer(async(err)=>{
                 if(err)
@@ -311,7 +334,8 @@ isExistingAccount = (phoneno) =>{
                         }
                     }
                     var rows = await Database.findOne('ApplicantInfo',user);
-                    if (rows && rows.length) {
+                    //console.log(rows);
+                    if (rows) {
                         resolve(true);
                     }
                     else{
@@ -347,7 +371,7 @@ StoreOTPDB = async(otp, phoneno)=>{
                         OTP:otp,
                         OTPExpiryTime:ExpiryTime
                     }
-                    console.log("insert");
+                    //console.log("insert");
                     var rows = await Database.insertOne('ApplicantInfo',newobj);
                     if(rows)
                     resolve(true);
@@ -361,7 +385,7 @@ StoreOTPDB = async(otp, phoneno)=>{
                             OTPExpiryTime:ExpiryTime
                         }
                     }
-                    console.log("update");
+                    //console.log("update");
                     var rows = await Database.updateOne('ApplicantInfo',user,newobj);
                     if(rows > 0){
                         resolve(true);
@@ -404,9 +428,9 @@ CheckifOTPisValid = async(otp, phoneno)=>{
         return new Promise(async(resolve, reject) => {
             Database.connectoToServer(async(err)=>{
                 var user = {phoneNo:phoneno,OTP:otp};
-                console.log(user);
+                //console.log(user);
                 var rows = await Database.findOne('ApplicantInfo',user);
-                console.log(rows);
+                //console.log(rows);
                 if(!rows || rows.length == 0)
                 resolve(false);
                 else{
@@ -424,7 +448,7 @@ CheckifOTPisValid = async(otp, phoneno)=>{
                                 OTPExpiryTime:1
                             }
                         }
-                        console.log("update")
+                        //console.log("update")
                         var rows = await Database.updateOne('ApplicantInfo',oldobj,newobj);
                         if(rows > 0){
                             resolve(true)
@@ -453,7 +477,7 @@ app.get('/getformcontrols',async(req,res) => {
             
             try{
                 var rows = await Database.getAll('Formcontrols')
-                console.log(rows);
+                //console.log(rows);
                 return res.send(rows);
             }
             catch(e){
@@ -463,28 +487,45 @@ app.get('/getformcontrols',async(req,res) => {
         });
 })
 
+app.get('/getApplicantType',async(req,res) => {
+    Database.connectoToServer(async(err)=>{
+             if(err)
+             throw err;
+             
+             try{
+                 var rows = await Database.getAll('ApplicantType')
+                 //console.log(rows);
+                 return res.send(rows);
+             }
+             catch(e){
+                 console.log(e);
+                 throw new Error(e);
+             }
+         });
+ })
 
 app.post('/saveForm', (req, res) => {
     console.log("SaveForm");
     FormFields = req.body.FormFields;
-    ModifiedFields = new Array();
-    for(var i=0;i<FormFields.length;i++){
-        ModifiedFields[i] = {};
-        ModifiedFields[i].type = FormFields[i].type;
-        ModifiedFields[i].optionCount = FormFields[i].optionCount;
-        labelname =  FormFields[i].label;
-        ModifiedFields[i][labelname] = FormFields[i].options;
-    }
+    // ModifiedFields = new Array();
+    // for(var i=0;i<FormFields.length;i++){
+    //     ModifiedFields[i] = {};
+    //     ModifiedFields[i].type = FormFields[i].type;
+    //     ModifiedFields[i].optionCount = FormFields[i].optionCount;
+    //     labelname =  FormFields[i].label;
+    //     ModifiedFields[i][labelname] = FormFields[i].options;
+    // }
     try{
         Database.connectoToServer(async(err)=>{
             if(err)
             throw err;
             var FormObj = {
                 FormTitle : req.body.FormTitle,
-                FormFields:ModifiedFields
+                FormType : req.body.FormType,
+                FormFields:FormFields
             }
             var rows = await Database.insertOne('Forms',FormObj);
-            console.log(rows);
+            //console.log(rows);
             if(rows)
             res.send(true);
             else
@@ -495,6 +536,83 @@ app.post('/saveForm', (req, res) => {
         res.send(e);
     }
 })
+
+app.post('/getForm', (req, res) => {
+    //console.log("getForm");
+    type = req.body.type;
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.findOne('Forms',{FormType:type});
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.get('/getAllForms', (req, res) => {
+    //console.log("getForm");
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getAll('Forms');
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.get('/getAllApplicants', (req, res) => {
+    //console.log("getForm");
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getAll('ApplicantData');
+            console.log(rows);
+            if(rows)
+            res.send(rows);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.post('/saveApplicantData', (req, res) => {
+    ApplicantDetails = req.body;
+    //console.log(ApplicantDetails);
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            ApplicantDetails._id = Database.ObjectID(ApplicantDetails._id);
+            var rows = await Database.insertOne('ApplicantData',ApplicantDetails);
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send(null);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+});
 
 app.get('*', (req, res) => {
     console.log("Inside *")

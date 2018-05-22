@@ -3,6 +3,7 @@ import { CustomFormService } from '../custom-form.service';
 
 import { FormControlModel } from '../form-control.model'
 import { concat } from 'rxjs/observable/concat';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-custom-form',
@@ -13,10 +14,17 @@ export class CustomFormComponent implements OnInit {
   controls : Array<FormControlModel>;
   FormLabelList: Array<FormControlModel>; // This contains the control type, label and options 
   ProfileFormControlCount = 0;
+  FormType:string;
   FormTitle:string;
-  constructor(private customFormService:CustomFormService) { }
+  ApplicantType;
+  constructor(private customFormService:CustomFormService, private authService: AuthService) { }
 
   ngOnInit() {
+    this.authService.getApplicantType().subscribe(obj =>{
+      //console.log(obj);
+      this.ApplicantType = obj;
+    })
+
     this.customFormService.GetFormControls().subscribe((obj) =>{
       this.controls = new Array();
       for(var i=0;i<obj.length;i++){
@@ -36,7 +44,6 @@ export class CustomFormComponent implements OnInit {
   }
 
   AddControl(control){
-
     const labelname = "Label"+ this.ProfileFormControlCount;
     const newitem = new FormControlModel();
     newitem.label = labelname;
@@ -55,7 +62,7 @@ export class CustomFormComponent implements OnInit {
 
   OnSave(){
     //console.log(this.FormLabelList);
-    this.customFormService.SaveForm(this.FormLabelList, this.FormTitle);
+    this.customFormService.SaveForm(this.FormLabelList, this.FormTitle, this.FormType);
   }
 
 

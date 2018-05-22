@@ -1,4 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
+ObjectID = require('mongodb').ObjectID;
 var _db;
 
 const connectoToServer = (callback)=>{
@@ -64,6 +65,17 @@ const findAll = async(col,id)=>{
     }
 }
 
+const findOneAndUpdate = async(col,oldval, newval)=>{
+    try {
+        const results = await _db.collection(col).findOneAndUpdate(oldval,newval,{
+            returnNewDocument : true
+        });;
+        return results
+    } catch (e) {
+        throw e
+    }
+}
+
 const disconnectDB = () => _db.close()
 
 module.exports = {
@@ -73,5 +85,7 @@ module.exports = {
     updateOne,
     getAll,
     findOne,
-    findAll
+    findAll,
+    findOneAndUpdate,
+    ObjectID
     };

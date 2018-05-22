@@ -31,13 +31,18 @@
               <button class="btn btn-warning" *ngIf="isSMSSent && !isPhoneVerified" (click)="VerifyOTP()" type='button'>Verify OTP</button>
             
             <div class="form-group" *ngIf="isPhoneVerified">
+              <label for="type">Type
+                <select id="type" name="type" ngModel required>
+                    <option selected disabled>Choose one</option>
+                    <option *ngFor="let option of ApplicantType;let j=index">{{option.type}}</option>
+                </select></label>
               <label for="password">Password</label>
               <input type="password" minlength="6" id="password" name="password" class="form-control" ngModel required #password = "ngModel">
               <span class="help-block" *ngIf="!password.valid && password.touched" >Password is invalid</span>
               <span class="help-block" *ngIf="password.errors?.minlength && password.touched">Password must be atleast 6 characters long</span>
             </div>
             <button class="btn btn-primary" *ngIf="isPhoneVerified" [disabled]="!f.valid && f.touched" type="submit">Sign Up</button>
-            <button class="btn btn-primary" (click)="OnLoginPage()" type='button'>Login</button>
+            <button class="btn btn-default" (click)="OnLoginPage()" type='button'>Already have an account? Log in</button>
           </form>
     </div>
 </div>

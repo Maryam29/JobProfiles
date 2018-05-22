@@ -23,9 +23,9 @@ export class SigninComponent implements OnInit {
           this.message = "Your username or password is incorrect";
       }
       else{
-          //console.log("Signin Successful");
-          this.authService.isAuthenticated.next(true);
-          this.router.navigate(['/']);
+        this.authService.sessionData = obj.user;
+        this.authService.isAuthenticated.next(true);
+        this.router.navigate(['/']);
       }
   }, error => this.router.navigate(['/signin']));;
   }

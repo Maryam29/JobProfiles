@@ -15,6 +15,9 @@ import { SigninComponent } from './signin/signin.component';
 import { HomeComponent } from './home/home.component';
 import { SignupComponent } from './signup/signup.component';
 import { CustomFormComponent } from './home/custom-form/custom-form.component';
+import { ApplicantFormComponent } from './home/applicant-form/applicant-form.component';
+import { ViewFormsComponent } from './home/view-forms/view-forms.component';
+import { ApplicantListComponent } from './home/applicant-list/applicant-list.component';
 
 import { KeysPipe } from './home/JsonKeys.pipe';
 
@@ -22,7 +25,10 @@ const appRoutes: Routes = [
   { path: 'signin', component: SigninComponent},
   { path: 'signup', component: SignupComponent},
   { path: 'home', component: HomeComponent, canActivate:[AuthGuard],children: [
-    { path: 'createform', component: CustomFormComponent, canActivate:[AuthGuard]}
+    { path: 'createform', component: CustomFormComponent, canActivate:[AuthGuard]},
+    { path: 'viewforms', component: ViewFormsComponent, canActivate:[AuthGuard]},
+    { path: 'applicants', component: ApplicantListComponent, canActivate:[AuthGuard]},
+    { path: 'form', component: ApplicantFormComponent, canActivate:[AuthGuard]}
 ]},
   { path: '**', redirectTo: '/home', pathMatch: 'full' }
 ]
@@ -34,7 +40,10 @@ const appRoutes: Routes = [
     HomeComponent,
     SignupComponent,
     CustomFormComponent,
-    KeysPipe
+    KeysPipe,
+    ApplicantFormComponent,
+    ViewFormsComponent,
+    ApplicantListComponent
   ],
   imports: [
     BrowserModule,

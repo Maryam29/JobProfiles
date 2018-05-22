@@ -14,24 +14,31 @@ export class SignupComponent implements OnInit {
   @Input() otptext:string;
   @Input() phoneno:string;
   @Input() message:string;
-
+  
+  ApplicantType: any[];
   isPhoneVerified = false;
   isSMSSent = false;
   constructor(private router: Router, private authService: AuthService) { }
 
   ngOnInit() {
+    this.authService.getApplicantType().subscribe(obj =>{
+      //console.log(obj);
+      this.ApplicantType = obj;
+    })
   }
 
   OnSignUp(form:NgForm){
     const userid = form.value.userid;
     const password = form.value.password;
-    this.authService.Signup(userid, password).subscribe(obj => {
+    const type = form.value.type;
+    this.authService.Signup(userid, password, type).subscribe(obj => {
       if(obj.user == false){
         this.message = "Some Error Occured. Try Again";
       }
       else{
-          this.authService.isAuthenticated.next(true);
-          this.router.navigate(['/']);
+        this.authService.sessionData = obj.user;
+        this.authService.isAuthenticated.next(true);
+        this.router.navigate(['/']);
       }
   }, error => this.router.navigate(['/signup']));
   }
