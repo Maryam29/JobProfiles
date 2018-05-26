@@ -19,8 +19,4 @@ export class AppComponent {
     });
     
   }
-  OnLogout(){
-   //this.AuthService.Logout();
-  }
-
 }

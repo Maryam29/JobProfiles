@@ -3,17 +3,17 @@
             <div class="navbar-header">
             </div>
             <ul class="nav navbar-nav navbar-right">
-                <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
+                <!-- <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                     <a [routerLink]="['createform']">Create Form</a>
-                </li>
+                </li> -->
                 <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
-                    <a [routerLink]="['viewforms']">View Form</a>
+                    <a [routerLink]="['forms']">View Form</a>
                 </li>
                 <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                         <a [routerLink]="['applicants']">Applicants</a>
                     </li>
                 <li routerLinkActive="active" *ngIf="UserType != 'Admin'">
-                    <a [routerLink]="['form']">Fill Form</a>
+                    <a [routerLink]="['profile']">Profile</a>
                 </li>
                 <li>
                     <a style="cursor: pointer" (click)="OnLogout()">Logout</a>

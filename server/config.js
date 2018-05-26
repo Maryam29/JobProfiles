@@ -68,11 +68,32 @@ const findAll = async(col,id)=>{
 const findOneAndUpdate = async(col,oldval, newval)=>{
     try {
         const results = await _db.collection(col).findOneAndUpdate(oldval,newval,{
-            returnNewDocument : true
-        });;
-        return results
+            returnOriginal : false
+        });
+        console.log(results);
+        return results.value
     } catch (e) {
         throw e
+    }
+}
+
+const updateOrInsert = async(col,oldval, newval)=>{
+    try{
+        const results = await _db.collection(col).findOneAndUpdate(oldval,newval,{returnNewDocument:true,upsert:true});
+        if(results){
+            //console.log(results.lastErrorObject.updatedExisting);
+            if(results.lastErrorObject.updatedExisting && results.lastErrorObject.n ==1){
+                return results.value;
+            }
+            else if(!results.lastErrorObject.updatedExisting && results.lastErrorObject.n ==1){
+                const newrow = await _db.collection(col).findOne({_id:results.lastErrorObject.upserted});
+                return newrow;
+            }
+        }
+            return null;
+    }
+    catch(e){
+        throw e;
     }
 }
 
@@ -87,5 +108,6 @@ module.exports = {
     findOne,
     findAll,
     findOneAndUpdate,
-    ObjectID
+    ObjectID,
+    updateOrInsert
     };

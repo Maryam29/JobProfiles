@@ -1,22 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input ,OnChanges, Output, EventEmitter} from '@angular/core';
 import { CustomFormService } from '../custom-form.service';
 
-import { FormControlModel } from '../form-control.model'
-import { concat } from 'rxjs/observable/concat';
+import { FormControlModel } from '../form-control.model';
 import { AuthService } from '../../auth/auth.service';
+import { emit } from 'cluster';
 
 @Component({
   selector: 'app-custom-form',
   templateUrl: './custom-form.component.html',
   styleUrls: ['./custom-form.component.css']
 })
-export class CustomFormComponent implements OnInit {
+export class CustomFormComponent implements OnInit, OnChanges {
+  @Input() SelectedForm = {
+    FormFields:[],
+    FormTitle:"",
+    FormType:"",
+    _id:null
+  };
+  @Output() FormSaved = new EventEmitter();
+
   controls : Array<FormControlModel>;
-  FormLabelList: Array<FormControlModel>; // This contains the control type, label and options 
   ProfileFormControlCount = 0;
-  FormType:string;
-  FormTitle:string;
   ApplicantType;
+
+  ngOnChanges(){
+    this.ProfileFormControlCount = this.SelectedForm.FormFields.length;
+  }
+ 
   constructor(private customFormService:CustomFormService, private authService: AuthService) { }
 
   ngOnInit() {
@@ -40,7 +50,10 @@ export class CustomFormComponent implements OnInit {
         this.controls.push(control);
       }
     });
-    this.FormLabelList = new Array();
+  }
+
+  RemoveControl(index){
+    this.SelectedForm.FormFields.splice(index,1);
   }
 
   AddControl(control){
@@ -55,24 +68,35 @@ export class CustomFormComponent implements OnInit {
       var optionlabel = "option"+count;
       newitem.options.push(optionlabel);
     }
-    this.FormLabelList.push(newitem);
-    //console.log(this.FormLabelList);
+    this.SelectedForm.FormFields.push(newitem);
     this.ProfileFormControlCount++;
   }
 
   OnSave(){
-    //console.log(this.FormLabelList);
-    this.customFormService.SaveForm(this.FormLabelList, this.FormTitle, this.FormType);
+    //console.log(this.SelectedForm.FormFields);
+    this.customFormService.SaveForm(this.SelectedForm.FormFields, this.SelectedForm.FormTitle, this.SelectedForm.FormType, this.SelectedForm._id)
+    .subscribe(obj =>{
+      if(obj){
+        console.log(obj);
+        this.SelectedForm._id = obj._id;
+        this.FormSaved.emit(this.SelectedForm);
+      }
+  });
+    
   }
-
 
   OnOptionChange(i,newvalue,j){
-    this.FormLabelList[i].options[j] = newvalue;
-    //console.log(this.FormLabelList[i]);
+    this.SelectedForm.FormFields[i].options[j] = newvalue;
+    //console.log(this.SelectedForm.FormFields[i]);
   }
+
   AddOption(i){
-    var optionlabel = "option"+this.FormLabelList[i].optionCount;
-    this.FormLabelList[i].optionCount++;
-    this.FormLabelList[i].options.push(optionlabel);
+    var optionlabel = "option"+this.SelectedForm.FormFields[i].optionCount;
+    this.SelectedForm.FormFields[i].optionCount++;
+    this.SelectedForm.FormFields[i].options.push(optionlabel);
+  }
+
+  RemoveOption(controlindex,optionindex){
+    this.SelectedForm.FormFields[controlindex].options.splice(optionindex,1);
   }
 }

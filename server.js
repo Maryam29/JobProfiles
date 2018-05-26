@@ -138,13 +138,13 @@ app.use(passport.session()); // persistent login sessions
                             type:type
                         }
                     }
-                    
+                    //console.log("signup");
                     var rows = await Database.findOneAndUpdate('ApplicantInfo',user,newobj);
                     //console.log("signup");
-                    //console.log(rows.value);
+                    //console.log(rows);
 
-                    if (rows.value) {
-                        return done(null, rows.value);
+                    if (rows) {
+                        return done(null, rows);
                     }
                     else{
                         return done(null, false,  'someErrorOccured');
@@ -519,17 +519,23 @@ app.post('/saveForm', (req, res) => {
         Database.connectoToServer(async(err)=>{
             if(err)
             throw err;
+            
             var FormObj = {
                 FormTitle : req.body.FormTitle,
                 FormType : req.body.FormType,
                 FormFields:FormFields
             }
-            var rows = await Database.insertOne('Forms',FormObj);
-            //console.log(rows);
-            if(rows)
-            res.send(true);
-            else
-            res.send(false);
+            if(req.body.formid){
+                oldForm = {
+                    _id:Database.ObjectID(req.body.formid)
+                }
+                var rows = await Database.updateOrInsert('Forms',oldForm,FormObj);
+            }
+            else{
+                var rows = await Database.insertOne('Forms',FormObj);
+            }
+            console.log(rows);
+            res.send(rows);
         })
     }
     catch(e){
@@ -549,6 +555,8 @@ app.post('/getForm', (req, res) => {
             //console.log(rows);
             if(rows)
             res.send(rows);
+            else
+            res.send({});
         })
     }
     catch(e){
@@ -567,6 +575,8 @@ app.get('/getAllForms', (req, res) => {
             //console.log(rows);
             if(rows)
             res.send(rows);
+            else
+            res.send({});
         })
     }
     catch(e){
@@ -582,9 +592,11 @@ app.get('/getAllApplicants', (req, res) => {
             throw err;
 
             var rows = await Database.getAll('ApplicantData');
-            console.log(rows);
+            //console.log(rows);
             if(rows)
             res.send(rows);
+            else
+            res.send({})
         })
     }
     catch(e){
@@ -601,12 +613,59 @@ app.post('/saveApplicantData', (req, res) => {
             throw err;
 
             ApplicantDetails._id = Database.ObjectID(ApplicantDetails._id);
-            var rows = await Database.insertOne('ApplicantData',ApplicantDetails);
+            var rows = await Database.updateOrInsert('ApplicantData',{_id:ApplicantDetails._id},ApplicantDetails);
+            
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+});
+
+app.post('/UpdateApplicantProfile', (req, res) => {
+    oldobj = req.body.oldobj;
+    newobj = req.body.newobj;
+
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            oldobj._id = Database.ObjectID(oldobj._id);
+            newobj = {$set:newobj};
+            console.log(oldobj);
+            console.log(newobj);
+            var rows = await Database.findOneAndUpdate('ApplicantData',oldobj,newobj);
             //console.log(rows);
             if(rows)
             res.send(rows);
             else
-            res.send(null);
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+});
+
+app.post('/getApplicantProfile', (req, res) => {
+    id = req.body._id;
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            const _id = Database.ObjectID(id);
+            var rows = await Database.findOne('ApplicantData',{_id:_id});
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
         })
     }
     catch(e){

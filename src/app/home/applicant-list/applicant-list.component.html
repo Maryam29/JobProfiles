@@ -1,7 +1,37 @@
 <div class="row">
+  <h3>
+    Applicant List
+  </h3>
+  <div class="col-md-2">
+    <ul>
+      <li *ngFor="let item of ApplicantsDetails;let j= index">
+        <a (click)="OnSelectApplicantType(j)">{{item.type}}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="col-md-8"  *ngIf="SelectedApplicant.count_applicants > 0">
+    <select [(ngModel)]="FilterType">
+      <option selected disabled>Choose one</option>
+      <option *ngFor="let col of SelectedApplicant.fields">{{col.label}}</option>
+    </select>
+
+    <input type="text" [(ngModel)]="FilterText" (ngModelChange)="OnFilterChange()">
+    <!-- <button (click)="OnFilterChange()">Search</button> -->
     <table class="table-striped table-bordered">
-      <tr *ngFor="let item of ApplicantsList">
-        
+      <tr>
+        <th *ngFor="let col of SelectedApplicant.fields">
+          {{col.label}}
+        </th>
+      </tr>
+      <tr *ngFor="let applicant of SelectedApplicant.applicants | filterBy: userFilter">
+        <td *ngFor="let col of SelectedApplicant.fields">{{applicant[col.label]}}</td>
       </tr>
     </table>
+    <br>
+    
+  </div>
+  <!-- <div class="col-md-2" *ngFor="let filter of userFilter | keys">
+      <label>filter.key</label>filter.value
+  </div> -->
 </div>

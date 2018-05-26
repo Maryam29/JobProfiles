@@ -1,8 +1,10 @@
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { error } from 'util';
-import 'rxjs/rx';
+import * as _ from 'lodash';
+import { map } from 'rxjs/operators/map';
+//import 'rxjs/add/operator/map';
+import {Observable} from 'rxjs/observable';
 import { Subject } from 'rxjs/Subject';
 
 @Injectable()
@@ -20,17 +22,14 @@ export class CustomFormService {
         })
     }
 
-    SaveForm(FormFields,FormTitle, FormType){
-        return this.http.post('saveForm',{FormFields:FormFields, FormTitle, FormType}).map(res =>{
+    SaveForm(FormFields,FormTitle, FormType, formid){
+        return this.http.post('saveForm',{FormFields:FormFields, FormTitle, FormType, formid}).map(res =>{
             if(res.status == 400){
                 throw new Error("Couldn't Save Forms");
             }
             else{
-                console.log(res);
                 return res.json();
             }
-        }).subscribe(obj =>{
-            return obj;
         })
     }
 
@@ -41,8 +40,11 @@ export class CustomFormService {
                 throw new Error("Couldn't Get Forms");
             }
             else{
-                console.log(res);
+                var obj = res.json();
+                if(!_.isEmpty(obj))
                 return res.json();
+
+                return null;
             }
         });
     }
@@ -65,6 +67,7 @@ export class CustomFormService {
                 throw new Error("Couldn't Get Applicants List");
             }
             else{
+                var obj = res.json();
                 return res.json();
             }
         });
@@ -76,9 +79,46 @@ export class CustomFormService {
                 throw new Error("Couldn't Get Forms");
             }
             else{
-                console.log(res);
+                var obj = res.json();
+                console.log(obj);
+
+                if(!_.isEmpty(obj))
                 return res.json();
+
+                return null;
             }
         });
+    }
+
+    GetApplicantProfile(_id){
+        return this.http.post('getApplicantProfile',{_id}).map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Forms");
+            }
+            else{
+                var obj = res.json();
+                if(!_.isEmpty(obj))
+                return res.json();
+
+                return null;
+            }
+        });
+    }
+
+    UpdateApplicantProfile(oldobj,newobj){
+        return this.http.post('UpdateApplicantProfile',{oldobj,newobj}).map(res =>{
+            if(res.status == 400){
+                throw new Error("Couldn't Get Forms");
+            }
+            else{
+                var obj = res.json();
+                console.log(obj);
+
+                if(!_.isEmpty(obj))
+                return res.json();
+
+                return null;
+            }
+        })
     }
 }

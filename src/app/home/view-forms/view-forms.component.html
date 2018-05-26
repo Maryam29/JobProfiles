@@ -1,59 +1,18 @@
 <div class="row">
     <div class="col-xs-4">
       <ul>
+        Forms List
         <li *ngFor="let option of FormsList; let j=index"><a (click) ="OnSelectForm(j)">{{option.FormTitle}} ({{option.FormType}})</a></li>
       </ul>
+      <a (click)="CreateNewForm()">+ New Form</a>
     </div>
-    <div class="col-xs-8" *ngIf="isSelected">
-      <h3>{{SelectedForm.FormTitle}}</h3>
-          <div *ngFor="let item of SelectedForm.FormFields;">
-              <div [ngSwitch]="item.type">
-                  <label>
-                      {{item.label}}
-                  </label>
-                 <!-----------------------For Radio Button------------------>
-                 <div *ngSwitchCase="'Radio'" class="form-group">
-                   <div *ngFor="let option of item.options; let j = index" >
-                       <!-- <label class="radio-inline">{{option}}</label> -->
-                       {{option}}
-                       <input type="radio" [value]="option">
-                      </div>
-                 </div>
-                 <!-----------------------End Radio Button------------------>
-           
-                 <!-----------------------For Checkbox Button------------------>
-                 <div *ngSwitchCase="'Checkbox'">
-                     <div *ngFor="let option of item.options; let j = index">
-                       {{option}}
-                         <input type="checkbox">
-                     </div>
-                 </div>
-                 <!-----------------------End Checkbox Button------------------>
-           
-                 <!-----------------------For Textbox Button------------------>
-                 <div *ngSwitchCase="'Textbox'" class="form-group">
-                     <input type="text"/>
-                 </div>
-                 <!----------------------End Textbox Button------------------>
-           
-                 <!-----------------------For Paragraph Button------------------>
-                 <div *ngSwitchCase="'Textarea'" class="form-group">
-                     <textarea></textarea>
-                 </div>
-                 <!----------------------End Paragraph Button------------------>
-           
-                 <!-----------------------For Dropbox Button------------------>
-                 <div *ngSwitchCase="'Dropdown'" class="form-group">
-                     <select>
-                         <option selected disabled>Choose one</option>
-                       <option *ngFor="let option of item.options;let j=index">{{option}}</option>
-                     </select>
-                 </div>
-                  <!----------------------End Dropbox Button------------------>
-               </div>
-             </div>
+
+    <div class="col-xs-4" *ngIf="isSelected" >
+        <app-custom-form [SelectedForm]="SelectedForm"  (FormSaved)="OnSaveForm($event)"></app-custom-form>
     </div>
-    <div class="col-xs-8" *ngIf="!isSelected">
-        <h3>Select a Form</h3>
-      </div>
+    
+    <div class="col-xs-4" *ngIf="isSelected" >
+            <app-preview-form [SelectedForm]="SelectedForm"></app-preview-form>
+        </div>
+     
 </div>

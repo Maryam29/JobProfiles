@@ -14,19 +14,39 @@ export class ViewFormsComponent implements OnInit {
   constructor(private customFormService:CustomFormService){}
 
   ngOnInit() {
-    this.customFormService.GetAllForms().subscribe(obj =>{
-      if(obj && obj.length){
-        this.FormsList = obj;
-        this.FormsCount = this.FormsList.length;
-        //console.log(this.FormsList);
-      }
-    })
+    this.getAllForms();
   }
 
   OnSelectForm(index){
     this.isSelected = true;
     //console.log(this.FormsList[index]);
     this.SelectedForm = this.FormsList[index];
+  }
+
+  OnSaveForm(event){
+    console.log("OnSave Form create form");
+    this.SelectedForm = event;
+    this.isSelected = true;
+    this.getAllForms();
+  }
+
+  CreateNewForm(){
+    this.SelectedForm = {
+      FormFields:[],
+      FormTitle:"",
+      FormType:"",
+      _id:null
+    }
+    this.isSelected = true;
+  }
+
+  getAllForms(){
+    this.customFormService.GetAllForms().subscribe(obj =>{
+      if(obj && obj.length){
+        this.FormsList = obj;
+        this.FormsCount = this.FormsList.length;
+      }
+    })
   }
 
 }

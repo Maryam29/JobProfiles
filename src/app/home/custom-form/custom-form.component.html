@@ -1,45 +1,43 @@
 <span>
   Form Title :
 </span>
-<input [(ngModel)]="FormTitle">
+<input [(ngModel)]="SelectedForm.FormTitle">
 <br>
 <span>
-    Form Type :
-  </span>
-  <select id="type" name="type" [(ngModel)]="FormType" required>
-    <option selected disabled>Choose one</option>
-    <option *ngFor="let option of ApplicantType">{{option.type}}</option>
-  </select>
-<div class="dropdown" dropdown [dropdownToggle]="false">
-  <button class="btn btn-default" dropdown-open>Controls list</button>
-  <div class="dropdown-menu" dropdown-not-closable-zone>
-    <table class="table-bordered table-condensed table-striped">
-      <tr *ngFor="let control of controls">
-        <td>{{control.type}}</td>
-        <td *ngIf="!control.isMultiField"></td>
-        <td *ngIf="control.isMultiField">
-          <input type="text" [(ngModel)]="control.optionCount">
-        </td>
-        <td>
-          <a (click)="AddControl(control)">Add</a>
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
+  Form Type :
+</span>
+<select id="type" name="type" [(ngModel)]="SelectedForm.FormType" required>
+  <option *ngFor="let option of ApplicantType">{{option.type}}</option>
+</select>
+
+<table class="table-bordered table-condensed table-striped">
+  <tr *ngFor="let control of controls">
+    <td>{{control.type}}</td>
+    <td *ngIf="!control.isMultiField"></td>
+    <td *ngIf="control.isMultiField">
+      <input type="text" [(ngModel)]="control.optionCount">
+    </td>
+    <td>
+      <a (click)="AddControl(control)">Add</a>
+    </td>
+  </tr>
+</table>
+
 <div *ngIf="ProfileFormControlCount >0">
-  <div *ngFor="let item of FormLabelList; let i = index;">
+  <div *ngFor="let item of SelectedForm.FormFields; let i = index;">
     <div [ngSwitch]="item.type">
       <label>{{item.type}}</label>
       <!-----------------------For Radio Button------------------>
       <div *ngSwitchCase="'Radio'" class="form-group">
         <input [(ngModel)]="item.label" [ngModelOptions]="{standalone: true}">
         <ul>
-            <li *ngFor="let option of item.options; let j = index">
-                  <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
-              </li>
+          <li *ngFor="let option of item.options; let j = index">
+            <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
+            <a (click)="RemoveOption(i,j)">X</a>
+          </li>
         </ul>
         <a (click)="AddOption(i)">Add Options</a>
+        <a (click)="RemoveControl(i)">Remove Control</a>
       </div>
       <!-----------------------End Radio Button------------------>
 
@@ -48,28 +46,33 @@
         <input [(ngModel)]="item.label" [ngModelOptions]="{standalone: true}">
         <ul>
           <li *ngFor="let option of item.options; let j = index">
-              <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
+            <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
+            <a (click)="RemoveOption(i,j)">X</a>
           </li>
         </ul>
         <a (click)="AddOption(i)">Add Options</a>
+        <a (click)="RemoveControl(i)">Remove Control</a>
       </div>
       <!-----------------------End Checkbox Button------------------>
 
       <!-----------------------For Dropbox Button------------------>
-      <div *ngSwitchCase="'Dropdown'" class="dropdown" dropdown [dropdownToggle]="false">
+      <div *ngSwitchCase="'Dropdown'" class="dropdown">
         <input [(ngModel)]="item.label" [ngModelOptions]="{standalone: true}" />
         <ul>
           <li *ngFor="let option of item.options; let j = index">
-              <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
+            <input [value]="option" (change)="OnOptionChange(i,$event.target.value,j)">
+            <a (click)="RemoveOption(i,j)">X</a>
           </li>
         </ul>
         <a (click)="AddOption(i)">Add Options</a>
+        <a (click)="RemoveControl(i)">Remove Control</a>
       </div>
       <!----------------------End Dropbox Button------------------>
 
       <!-----------------------For Textbox Button------------------>
       <div *ngSwitchCase="'Textbox'" class="form-group">
         <input [(ngModel)]="item.label" [ngModelOptions]="{standalone: true}">
+        <a (click)="RemoveControl(i)">Remove Control</a>
       </div>
 
       <!----------------------End Textbox Button------------------>
@@ -77,10 +80,12 @@
       <!-----------------------For TextArea Button------------------>
       <div *ngSwitchCase="'Textarea'" class="form-group">
         <input [(ngModel)]="item.label" [value]="item.label" [ngModelOptions]="{standalone: true}">
+        <a (click)="RemoveControl(i)">Remove Control</a>
       </div>
       <!----------------------End TextArea Button------------------>
     </div>
   </div>
   <br>
-  <button class="btn btn-primary" *ngIf= "ProfileFormControlCount>0" (click)="OnSave()" type="submit">Save</button>
+
+  <button class="btn btn-primary" *ngIf="ProfileFormControlCount>0" (click)="OnSave()" type="submit">Save</button>
 </div>

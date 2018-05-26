@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { Routes, RouterModule } from '@angular/router';
-import {DropdownModule} from "ngx-dropdown";
 import { ReactiveFormsModule } from '@angular/forms';
+import { FilterPipeModule } from 'ngx-filter-pipe';
 
 import { AuthGuard } from './auth/auth-guard.service';
 import { AuthService } from './auth/auth.service';
@@ -18,17 +18,18 @@ import { CustomFormComponent } from './home/custom-form/custom-form.component';
 import { ApplicantFormComponent } from './home/applicant-form/applicant-form.component';
 import { ViewFormsComponent } from './home/view-forms/view-forms.component';
 import { ApplicantListComponent } from './home/applicant-list/applicant-list.component';
+import { PreviewFormComponent } from './home/preview-form/preview-form.component';
 
-import { KeysPipe } from './home/JsonKeys.pipe';
+import { KeysPipe } from './home/Keys.pipe';
 
 const appRoutes: Routes = [
   { path: 'signin', component: SigninComponent},
   { path: 'signup', component: SignupComponent},
   { path: 'home', component: HomeComponent, canActivate:[AuthGuard],children: [
-    { path: 'createform', component: CustomFormComponent, canActivate:[AuthGuard]},
-    { path: 'viewforms', component: ViewFormsComponent, canActivate:[AuthGuard]},
+    // { path: 'createform', component: CreateFormComponent, canActivate:[AuthGuard]},
+    { path: 'forms', component: ViewFormsComponent, canActivate:[AuthGuard]},
     { path: 'applicants', component: ApplicantListComponent, canActivate:[AuthGuard]},
-    { path: 'form', component: ApplicantFormComponent, canActivate:[AuthGuard]}
+    { path: 'profile', component: ApplicantFormComponent, canActivate:[AuthGuard]}
 ]},
   { path: '**', redirectTo: '/home', pathMatch: 'full' }
 ]
@@ -43,14 +44,15 @@ const appRoutes: Routes = [
     KeysPipe,
     ApplicantFormComponent,
     ViewFormsComponent,
-    ApplicantListComponent
+    ApplicantListComponent,
+    PreviewFormComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    DropdownModule,
     ReactiveFormsModule,
+    FilterPipeModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [AuthService, AuthGuard, CustomFormService],
