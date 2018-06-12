@@ -14,13 +14,16 @@ import { AppComponent } from './app.component';
 import { SigninComponent } from './signin/signin.component';
 import { HomeComponent } from './home/home.component';
 import { SignupComponent } from './signup/signup.component';
-import { CustomFormComponent } from './home/custom-form/custom-form.component';
+import { CreateFormComponent } from './home/create-form/create-form.component';
+import { CreateTemplateComponent } from './home/create-template/create-template.component'
 import { ApplicantFormComponent } from './home/applicant-form/applicant-form.component';
 import { ViewFormsComponent } from './home/view-forms/view-forms.component';
 import { ApplicantListComponent } from './home/applicant-list/applicant-list.component';
 import { PreviewFormComponent } from './home/preview-form/preview-form.component';
+import { ApplicantProfileComponent } from './home/applicant-profile/applicant-profile.component';
 
 import { KeysPipe } from './home/Keys.pipe';
+import { TimesPipe } from './home/Times.pipe';
 
 const appRoutes: Routes = [
   { path: 'signin', component: SigninComponent},
@@ -29,7 +32,9 @@ const appRoutes: Routes = [
     // { path: 'createform', component: CreateFormComponent, canActivate:[AuthGuard]},
     { path: 'forms', component: ViewFormsComponent, canActivate:[AuthGuard]},
     { path: 'applicants', component: ApplicantListComponent, canActivate:[AuthGuard]},
-    { path: 'profile', component: ApplicantFormComponent, canActivate:[AuthGuard]}
+    { path: 'profile', component: ApplicantFormComponent, canActivate:[AuthGuard]},
+    { path: 'ViewProfile/:id', component: ApplicantProfileComponent, canActivate:[AuthGuard]},
+    { path: 'templates', component: CreateTemplateComponent, canActivate:[AuthGuard]}
 ]},
   { path: '**', redirectTo: '/home', pathMatch: 'full' }
 ]
@@ -40,12 +45,15 @@ const appRoutes: Routes = [
     SigninComponent,
     HomeComponent,
     SignupComponent,
-    CustomFormComponent,
-    KeysPipe,
+    CreateFormComponent,
     ApplicantFormComponent,
     ViewFormsComponent,
     ApplicantListComponent,
-    PreviewFormComponent
+    PreviewFormComponent,
+    CreateTemplateComponent,
+    ApplicantProfileComponent,
+    KeysPipe,
+    TimesPipe
   ],
   imports: [
     BrowserModule,

@@ -1,48 +1,51 @@
     <h4>Preview</h4>
     <h4>{{SelectedForm.FormTitle}}</h4>
-        <div *ngFor="let item of SelectedForm.FormFields;">
-            <div [ngSwitch]="item.type">
-                <label>
-                    {{item.label}}
-                </label>
-               <!-----------------------For Radio Button------------------>
-               <div *ngSwitchCase="'Radio'" class="form-group">
-                 <div *ngFor="let option of item.options; let j = index" >
-                     <!-- <label class="radio-inline">{{option}}</label> -->
-                     {{option}}
-                     <input type="radio" [value]="option">
-                    </div>
-               </div>
-               <!-----------------------End Radio Button------------------>
-         
-               <!-----------------------For Checkbox Button------------------>
-               <div *ngSwitchCase="'Checkbox'">
-                   <div *ngFor="let option of item.options; let j = index">
-                     {{option}}
-                       <input type="checkbox">
-                   </div>
-               </div>
-               <!-----------------------End Checkbox Button------------------>
-         
-               <!-----------------------For Textbox Button------------------>
-               <div *ngSwitchCase="'Textbox'" class="form-group">
-                   <input type="text"/>
-               </div>
-               <!----------------------End Textbox Button------------------>
-         
-               <!-----------------------For Paragraph Button------------------>
-               <div *ngSwitchCase="'Textarea'" class="form-group">
-                   <textarea></textarea>
-               </div>
-               <!----------------------End Paragraph Button------------------>
-         
-               <!-----------------------For Dropbox Button------------------>
-               <div *ngSwitchCase="'Dropdown'" class="form-group">
-                   <select>
-                       <option selected disabled>Choose one</option>
-                     <option *ngFor="let option of item.options;let j=index">{{option}}</option>
-                   </select>
-               </div>
-                <!----------------------End Dropbox Button------------------>
-             </div>
-           </div>
+    <div *ngFor="let section of SelectedForm.Sections;">
+        {{section.SectionName}}
+            <div *ngFor="let item of section.Fields;">
+                    <div [ngSwitch]="item.FieldType">
+                        <label>
+                            {{item.FieldName}}
+                        </label>
+                       <!-----------------------For Radio Button------------------>
+                       <div *ngSwitchCase="'Radio'" class="form-group">
+                         <div *ngFor="let option of item.options; let j = index" >
+                             <!-- <label class="radio-inline">{{option}}</label> -->
+                             {{option}}
+                             <input type="radio" [value]="option">
+                            </div>
+                       </div>
+                       <!-----------------------End Radio Button------------------>
+                 
+                       <!-----------------------For Checkbox Button------------------>
+                       <div *ngSwitchCase="'Checkbox'">
+                           <div *ngFor="let option of item.options; let j = index">
+                             {{option}}
+                               <input type="checkbox">
+                           </div>
+                       </div>
+                       <!-----------------------End Checkbox Button------------------>
+                 
+                       <!-----------------------For Textbox Button------------------>
+                       <div *ngSwitchCase="'Textbox'" class="form-group">
+                           <input type="text"/>
+                       </div>
+                       <!----------------------End Textbox Button------------------>
+                 
+                       <!-----------------------For Paragraph Button------------------>
+                       <div *ngSwitchCase="'Textarea'" class="form-group">
+                           <textarea></textarea>
+                       </div>
+                       <!----------------------End Paragraph Button------------------>
+                 
+                       <!-----------------------For Dropbox Button------------------>
+                       <div *ngSwitchCase="'Dropdown'" class="form-group">
+                           <select>
+                               <option selected disabled>Choose one</option>
+                             <option *ngFor="let option of item.options;let j=index">{{option}}</option>
+                           </select>
+                       </div>
+                        <!----------------------End Dropbox Button------------------>
+                     </div>
+                   </div><hr>
+    </div>

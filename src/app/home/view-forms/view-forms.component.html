@@ -1,14 +1,14 @@
 <div class="row">
-    <div class="col-xs-4">
+    <div class="col-xs-2">
       <ul>
         Forms List
-        <li *ngFor="let option of FormsList; let j=index"><a (click) ="OnSelectForm(j)">{{option.FormTitle}} ({{option.FormType}})</a></li>
+        <li *ngFor="let option of FormsList; let j=index"><a (click) ="OnSelectForm(j)">{{option.FormTitle}}</a></li>
       </ul>
       <a (click)="CreateNewForm()">+ New Form</a>
     </div>
 
-    <div class="col-xs-4" *ngIf="isSelected" >
-        <app-custom-form [SelectedForm]="SelectedForm"  (FormSaved)="OnSaveForm($event)"></app-custom-form>
+    <div class="col-xs-6" *ngIf="isSelected" >
+        <app-create-form [SelectedForm]="SelectedForm"  (FormSaved)="OnSaveForm($event)"></app-create-form>
     </div>
     
     <div class="col-xs-4" *ngIf="isSelected" >

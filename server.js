@@ -70,8 +70,6 @@ app.use(passport.session()); // persistent login sessions
         catch(e){
             done(null);
         }
-        
-        
     });
 
     passport.use('login', new LocalStrategy({
@@ -121,11 +119,7 @@ app.use(passport.session()); // persistent login sessions
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
                 //if there is no user with that email,create the user
-            // var newUserMysql = new Object();
-            // newUserMysql.phoneNo  = phoneNo;
-            // newUserMysql.type = type;
-            // newUserMysql.password = md5(password); // use the generateHash function in our user model
-            //console.log(newUserMysql);
+            
             Database.connectoToServer(async(err)=>{
                 if(err)
                 throw err;
@@ -505,34 +499,21 @@ app.get('/getApplicantType',async(req,res) => {
  })
 
 app.post('/saveForm', (req, res) => {
-    console.log("SaveForm");
-    FormFields = req.body.FormFields;
-    // ModifiedFields = new Array();
-    // for(var i=0;i<FormFields.length;i++){
-    //     ModifiedFields[i] = {};
-    //     ModifiedFields[i].type = FormFields[i].type;
-    //     ModifiedFields[i].optionCount = FormFields[i].optionCount;
-    //     labelname =  FormFields[i].label;
-    //     ModifiedFields[i][labelname] = FormFields[i].options;
-    // }
+    //console.log("SaveForm");
     try{
         Database.connectoToServer(async(err)=>{
             if(err)
             throw err;
             
-            var FormObj = {
-                FormTitle : req.body.FormTitle,
-                FormType : req.body.FormType,
-                FormFields:FormFields
-            }
-            if(req.body.formid){
-                oldForm = {
-                    _id:Database.ObjectID(req.body.formid)
-                }
-                var rows = await Database.updateOrInsert('Forms',oldForm,FormObj);
+            //console.log(req.body);
+            if(req.body._id){
+                //console.log("Update");
+                req.body._id = Database.ObjectID(req.body._id);
+                var rows = await Database.updateOrInsert('Forms',{_id:req.body._id},req.body);
             }
             else{
-                var rows = await Database.insertOne('Forms',FormObj);
+                //console.log("Insert");
+                var rows = await Database.insertOne('Forms',req.body);
             }
             console.log(rows);
             res.send(rows);
@@ -584,6 +565,26 @@ app.get('/getAllForms', (req, res) => {
     }
 })
 
+app.get('/getAllTemplates', (req, res) => {
+    //console.log("getForm");
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getAll('Templates');
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
 app.get('/getAllApplicants', (req, res) => {
     //console.log("getForm");
     try{
@@ -603,6 +604,46 @@ app.get('/getAllApplicants', (req, res) => {
         res.send(e);
     }
 })
+
+app.post('/GetAllApplicantsPersonalDetails', (req, res) => {
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getIfFieldExist('ApplicantData',req.body.id.toString());
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({})
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.post('/getTemplatesByFormID', (req, res) => {
+    formid = req.body.formID;
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            //console.log(formid);
+            var rows = await Database.findAllByID('Templates',{FormID:formid});
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+});
 
 app.post('/saveApplicantData', (req, res) => {
     ApplicantDetails = req.body;
@@ -626,6 +667,28 @@ app.post('/saveApplicantData', (req, res) => {
     }
 });
 
+app.post('/saveTemplate', (req, res) => {
+    template = req.body;
+    //console.log(ApplicantDetails);
+    try{
+        Database.connectoToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            template._id = Database.ObjectID(template._id);
+            var rows = await Database.updateOrInsert('Templates',{_id:template._id},template);
+            
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+});
+
 app.post('/UpdateApplicantProfile', (req, res) => {
     oldobj = req.body.oldobj;
     newobj = req.body.newobj;
@@ -637,8 +700,8 @@ app.post('/UpdateApplicantProfile', (req, res) => {
 
             oldobj._id = Database.ObjectID(oldobj._id);
             newobj = {$set:newobj};
-            console.log(oldobj);
-            console.log(newobj);
+            //console.log(oldobj);
+            //console.log(newobj);
             var rows = await Database.findOneAndUpdate('ApplicantData',oldobj,newobj);
             //console.log(rows);
             if(rows)
@@ -660,8 +723,9 @@ app.post('/getApplicantProfile', (req, res) => {
             throw err;
 
             const _id = Database.ObjectID(id);
+            console.log(_id);
             var rows = await Database.findOne('ApplicantData',{_id:_id});
-            //console.log(rows);
+            console.log(rows);
             if(rows)
             res.send(rows);
             else

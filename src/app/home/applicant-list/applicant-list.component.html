@@ -4,34 +4,55 @@
   </h3>
   <div class="col-md-2">
     <ul>
-      <li *ngFor="let item of ApplicantsDetails;let j= index">
+      <li *ngFor="let item of ApplicantsDetails;let j=index">
         <a (click)="OnSelectApplicantType(j)">{{item.type}}</a>
       </li>
     </ul>
   </div>
 
-  <div class="col-md-8"  *ngIf="SelectedApplicant.count_applicants > 0">
-    <select [(ngModel)]="FilterType">
+  <div class="col-md-10" *ngIf="SelectedType.count_applicants > 0"><!---->
+    <!-- <select [(ngModel)]="FilterType">
       <option selected disabled>Choose one</option>
-      <option *ngFor="let col of SelectedApplicant.fields">{{col.label}}</option>
-    </select>
+      <option *ngFor="let col of SelectedType.fields">{{col.FieldName}}</option>
+    </select> -->
 
-    <input type="text" [(ngModel)]="FilterText" (ngModelChange)="OnFilterChange()">
-    <!-- <button (click)="OnFilterChange()">Search</button> -->
-    <table class="table-striped table-bordered">
+    <input type="text" [(ngModel)]="FilterText">
+    <button class="btn btn-primary" (click)="OnSearch()">Search</button>
+    <button class="btn btn-default" (click)="OnClearSearch()">Clear Search</button>
+    <!-- <button class="btn btn-success" (click)="ExportSelectedProfiles()">Export to pdf</button> -->
+    <!---When Filter Text is not empty show filtered results-->
+    <table class="table table-striped table-bordered">
       <tr>
-        <th *ngFor="let col of SelectedApplicant.fields">
-          {{col.label}}
+        <th></th>
+        <th *ngFor="let col of SelectedType.fields">
+          {{col.FieldName}}
         </th>
       </tr>
-      <tr *ngFor="let applicant of SelectedApplicant.applicants | filterBy: userFilter">
-        <td *ngFor="let col of SelectedApplicant.fields">{{applicant[col.label]}}</td>
-      </tr>
+      <ng-container *ngFor="let applicant of SelectedType.applicants;let j=index">
+          <tr *ngIf="isApplicantFiltered[j]">
+              <input type="checkbox" [checked]="isApplicantChecked[j]" (change)="ToggleApplicantSelection(j)">
+              <td *ngFor="let col of SelectedType.fields">
+                {{applicant[col.FieldName]}}
+              </td>
+              <td><a [routerLink]="['../ViewProfile',applicant.applicantID]">View Profile</a></td>
+            </tr>
+        <!-- <tr *ngIf="isApplicantFiltered[j]">
+          <input type="checkbox" [checked]="isApplicantChecked[j]" (change)="ToggleApplicantSelection(j)">
+          <td *ngFor="let col of SelectedType.fields | filterBy:userFilter">
+            {{applicant["Personal Details"][0][col.FieldName]}}
+          </td>
+        </tr> -->
+
+        <!--PDF template-->
+        <div [hidden]=true #ApplicantProfiles>
+          <ul>
+            <li *ngFor="let col of SelectedType.fields">
+              <label>{{col.FieldName}}:</label>{{applicant[col.FieldName]}}
+            </li>
+          </ul>
+        </div>
+      </ng-container>
     </table>
     <br>
-    
   </div>
-  <!-- <div class="col-md-2" *ngFor="let filter of userFilter | keys">
-      <label>filter.key</label>filter.value
-  </div> -->
 </div>

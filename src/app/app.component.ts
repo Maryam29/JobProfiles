@@ -12,9 +12,9 @@ export class AppComponent {
   constructor(private AuthService:  AuthService){}
 
   ngOnInit(){
-    console.log("Nginit app compo");
+    //console.log("Nginit app compo");
     this.AuthService.isAuthenticated.subscribe((isauth) => {
-      console.log("Set Is Authenticated");
+      //console.log("Set Is Authenticated");
       this.IsAuthenticated = isauth;
     });
     

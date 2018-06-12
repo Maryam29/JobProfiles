@@ -56,9 +56,11 @@ const findOne = async(col, id)=>{
     }
 }
 
-const findAll = async(col,id)=>{
+const findAllByID = async(col,id)=>{
     try {
+        console.log(id);
         const results = await _db.collection(col).find(id).toArray();
+        console.log(results);
         return results
     } catch (e) {
         throw e
@@ -70,8 +72,21 @@ const findOneAndUpdate = async(col,oldval, newval)=>{
         const results = await _db.collection(col).findOneAndUpdate(oldval,newval,{
             returnOriginal : false
         });
-        console.log(results);
+        //console.log(results);
         return results.value
+    } catch (e) {
+        throw e
+    }
+}
+
+const getIfFieldExist = async(col,field)=>{
+    try {
+        // console.log(col);
+        console.log(field);
+        field = "5b1539c2f5e086aa37d87b6b";
+        const results = await _db.collection(col).find({"5b1539c2f5e086aa37d87b6b":{$exists:true}}).toArray();
+        console.log(results);
+        return results
     } catch (e) {
         throw e
     }
@@ -106,8 +121,9 @@ module.exports = {
     updateOne,
     getAll,
     findOne,
-    findAll,
+    findAllByID,
     findOneAndUpdate,
     ObjectID,
-    updateOrInsert
+    updateOrInsert,
+    getIfFieldExist
     };

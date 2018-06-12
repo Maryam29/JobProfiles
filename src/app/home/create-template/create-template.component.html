@@ -1,0 +1,43 @@
+
+<div class="col-md-2">
+  <ul>
+    <li *ngFor="let item of TemplatesList;let j=index">
+      <a (click)="OnEditTemplate(j)">{{item.TemplateTitle}}</a>
+    </li>
+  </ul>
+  <a (click)="OnCreateTemplate()">+ New Template</a>
+</div>
+
+<div class="col-md-6" *ngIf="createMode">
+  <select id="type" name="type"  (change)="OnSelectForm($event)">
+    <option *ngFor="let option of FormsList;let j=index">
+      {{option.FormTitle}}
+    </option>
+  </select>
+  Template Title:
+  <input type="text" [(ngModel)]="TemplateTitle">
+  <div *ngFor="let section of SelectedForm.Sections; let secindex= index">
+    {{section.SectionName}}<br>
+
+    <ng-container *ngFor="let field of section.Fields;let fieldindex=index">
+      <input type="checkbox" [checked]="field.isFieldChecked" (change)="ToggleFieldSelection(secindex,fieldindex)">
+      <label>{{field.FieldName}}<br></label>
+    </ng-container>
+    
+    <hr>
+  </div>
+
+  <button (click)="OnSaveTemplate()" *ngIf="TotalFieldsChecked>0">Save Template</button>
+</div>
+
+<div class="col-md-4" *ngIf="createMode">{{TemplateTitle}}
+  <div *ngFor="let section of SelectedForm.Sections;let secindex= index">
+    <ng-container *ngIf="CheckedFieldCount(secindex) > 0">
+        {{section.SectionName}}<br>
+    </ng-container>
+    <ng-container *ngFor="let field of section.Fields;let fieldindex=index">
+      <label *ngIf="field.isFieldChecked">{{field.FieldName}}<br></label>
+    </ng-container>
+    <hr>
+  </div>
+</div>

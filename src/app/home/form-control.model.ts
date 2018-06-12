@@ -1,7 +1,6 @@
-export class FormControlModel {
-    type:string;
-    optionCount :number;
-    options:any[];
-    label:string;
-    isMultiField;
+export class FormControlModel{
+    Type:string;
+    isMultipleOption:boolean;
+    optionCount:number;
+    Total:number;
 }

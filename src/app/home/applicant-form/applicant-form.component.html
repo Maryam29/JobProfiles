@@ -1,137 +1,146 @@
 <!--Empty Form-->
 <div *ngIf="!isApplicationFilled">
-    <form (ngSubmit)="onSaveForm()" *ngIf="!isApplicationFilled && fieldcount >0" [formGroup]="ProfileForm">
+    <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
         <h3>{{FormTitle}}</h3>
-      <div formArrayName="customcontrols" *ngFor="let item of ProfileForm.get('customcontrols').controls; let i = index;">
-       <div [ngSwitch]="FormFields[i].type">
-    
-          <!-----------------------For Radio Button------------------>
-          <div *ngSwitchCase="'Radio'" class="form-group">
-            <label>
-              {{FormFields[i].label}}
-              <div *ngFor="let option of FormFields[i].options; let j = index" >
-                <!-- <label class="radio-inline">{{option}}</label> -->
-                {{option}}
-                  <input type="radio" [formControlName]="i" [value]="option">
-              </div>
-            </label>
-          </div>
-          <!-----------------------End Radio Button------------------>
-    
-          <!-----------------------For Checkbox Button------------------>
-          <div *ngSwitchCase="'Checkbox'">
-            <label [for]="i">
-              {{FormFields[i].label}}
-              <div *ngFor="let option of FormFields[i].options; let j = index" [formArrayName]="i">
-                {{option}}
-                  <input type="checkbox" [formControlName]="j">
-              </div>
-            </label>
-          </div>
-          <!-----------------------End Checkbox Button------------------>
-    
-          <!-----------------------For Textbox Button------------------>
-          <div *ngSwitchCase="'Textbox'" class="form-group">
-            <label [for]="i">
-              {{FormFields[i].label}}
-              <input type="text" [formControlName]="i">
-            </label>
-          </div>
-          <!----------------------End Textbox Button------------------>
-    
-          <!-----------------------For Paragraph Button------------------>
-          <div *ngSwitchCase="'Textarea'" class="form-group">
-            <label [for]="i">
-              {{FormFields[i].label}}
-              <textarea [formControlName]="i"></textarea>
-            </label>
-          </div>
-          <!----------------------End Paragraph Button------------------>
-    
-          <!-----------------------For Dropbox Button------------------>
-          <div *ngSwitchCase="'Dropdown'" class="form-group">
-            <label [for]="i">
-              {{FormFields[i].label}}
-              <select [formControlName]="i">
-                  <option selected disabled>Choose one</option>
-                <option *ngFor="let option of FormFields[i].options;let j=index">{{option}}</option>
-              </select>
-            </label>
-          </div>
-           <!----------------------End Dropbox Button------------------>
+        <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
+            <h4>{{Sections[currsectionindex].SectionName}}</h4>
+            <span>
+                <a *ngIf="Sections[currsectionindex].CanBeMultiple" (click)="AddSection(currsectionindex)">+</a>
+            </span>
+
+            <div *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
+                <div *ngFor="let field of Sections[currsectionindex].Fields; let fieldindex = index" [formGroupName]="subindex">
+                    <div [ngSwitch]="field.FieldType">
+                        <label>{{field.FieldName}}</label>
+
+                        <!-----------------------For Radio Button------------------>
+                        <div *ngSwitchCase="'Radio'">
+                            <div *ngFor="let option of field.options;let optionindex = index">
+                                {{option}}
+                                <input type="radio" [formControlName]="fieldindex" [value]="option">
+                            </div>
+                        </div>
+                        <!-----------------------End Radio Button------------------>
+
+                        <!-----------------------For Checkbox Button------------------>
+                        <div *ngSwitchCase="'Checkbox'">
+                            <div *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
+                                {{option}}
+                                <input type="checkbox" [formControlName]="optionindex">
+                            </div>
+                        </div>
+                        <!-----------------------End Checkbox Button------------------>
+                        <!-----------------------For Textbox Button------------------>
+                        <div *ngSwitchCase="'Textbox'" class="form-group">
+                            <input type="text" [formControlName]="fieldindex">
+                        </div>
+                        <!----------------------End Textbox Button------------------>
+
+                        <!-----------------------For Paragraph Button------------------>
+                        <div *ngSwitchCase="'Textarea'" class="form-group">
+                            <textarea [formControlName]="fieldindex"></textarea>
+                        </div>
+                        <!----------------------End Paragraph Button------------------>
+
+
+                        <!-----------------------For Dropbox Button------------------>
+                        <div *ngSwitchCase="'Dropdown'" class="form-group">
+                            <select [formControlName]="fieldindex">
+                                <option selected disabled>Choose one</option>
+                                <option *ngFor="let option of field.options;">{{option}}</option>
+                            </select>
+                        </div>
+                        <!----------------------End Dropbox Button------------------>
+
+                    </div>
+                </div>
+            </div>
+            <hr>
         </div>
-      </div>
-      <br>
-      <button [disabled]="!ProfileForm.valid" class="btn btn-primary" type="submit">Save</button>
+        <button class="btn btn-primary" type="submit">Save</button>
     </form>
+</div>
+<br>
+
+<div *ngIf="isApplicationFilled">
+    <ul>
+        <div *ngFor="let currsection of Sections;let currsectionindex = index">
+            <h4>{{Sections[currsectionindex].SectionName}}</h4>
+            <a (click)="EditField(currsectionindex)">Edit</a>
+            <table class="table-bordered table-striped">
+                <tr>
+                    <th *ngFor="let field of Sections[currsectionindex].Fields; let fieldindex = index">{{field.FieldName}}</th>
+                </tr>
+
+                <tr *ngFor="let subsection of currsection.count|times; let subindex = index">
+                    <td *ngFor="let field of Sections[currsectionindex].Fields; let fieldindex = index">
+                        {{GetFieldValue(Sections[currsectionindex].SectionID,subindex,field.FieldID)}}
+                    </td>
+                </tr>
+            </table>
+            <form *ngIf="Sections[currsectionindex].isEditMode" (ngSubmit)="onSaveSection(currsectionindex)" [formGroup]="ProfileForm">
+
+                <div formArrayName="customcontrols">
+                    <span>
+                        <a *ngIf="Sections[currsectionindex].CanBeMultiple" (click)="AddSection(currsectionindex)">Add Section</a>
+                    </span>
+
+                    <div *ngFor="let subsection of currsection.count|times; let subindex = index" [formArrayName]="currsectionindex">
+                        <span>
+                            <a (click)="RemoveSection(currsectionindex,subindex)">Remove Section</a>
+                        </span>
+                        <div *ngFor="let field of Sections[currsectionindex].Fields; let fieldindex = index" [formGroupName]="subindex">
+                            <div [ngSwitch]="field.FieldType">
+                                <label>{{field.FieldName}}</label>
+
+                                <!-----------------------For Radio Button------------------>
+                                <div *ngSwitchCase="'Radio'">
+                                    <div *ngFor="let option of field.options;let optionindex = index">
+                                        {{option}}
+                                        <input type="radio" [formControlName]="fieldindex" [value]="option">
+                                    </div>
+                                </div>
+                                <!-----------------------End Radio Button------------------>
+
+                                <!-----------------------For Checkbox Button------------------>
+                                <div *ngSwitchCase="'Checkbox'">
+                                    <div *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
+                                        {{option}}
+                                        <input type="checkbox" [formControlName]="optionindex">
+                                    </div>
+                                </div>
+                                <!-----------------------End Checkbox Button------------------>
+                                <!-----------------------For Textbox Button------------------>
+                                <div *ngSwitchCase="'Textbox'" class="form-group">
+                                    <input type="text" [formControlName]="fieldindex">
+                                </div>
+                                <!----------------------End Textbox Button------------------>
+
+                                <!-----------------------For Paragraph Button------------------>
+                                <div *ngSwitchCase="'Textarea'" class="form-group">
+                                    <textarea [formControlName]="fieldindex"></textarea>
+                                </div>
+                                <!----------------------End Paragraph Button------------------>
+
+
+                                <!-----------------------For Dropbox Button------------------>
+                                <div *ngSwitchCase="'Dropdown'" class="form-group">
+                                    <select [formControlName]="fieldindex">
+                                        <option selected disabled>Choose one</option>
+                                        <option *ngFor="let option of field.options;">{{option}}</option>
+                                    </select>
+                                </div>
+                                <!----------------------End Dropbox Button------------------>
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+
+        </div>
+    </ul>
 </div>
 <!-- Profile Already Filled-->
-<div *ngIf="isApplicationFilled">
-<ul>
-  <li *ngFor="let item of FormFields;let i= index">
-    <label>{{item.label}}</label> : {{ProfileDetails[item.label]}}
-    <br>
-    <a (click)="EditField(i)">Edit</a>
-
-    <!------------------------------Edit Form---------------------------------->
-    <form *ngIf="isSelected[i]" (ngSubmit)="onSaveField(i)" [formGroup]="ProfileForm">
-      <div formArrayName="customcontrols">
-       <div [ngSwitch]="FormFields[i].type">
-    
-          <!-----------------------For Radio Button------------------>
-          <div *ngSwitchCase="'Radio'" class="form-group">
-            <label>
-              <div *ngFor="let option of FormFields[i].options; let j = index" >
-                <!-- <label class="radio-inline">{{option}}</label> -->
-                {{option}}
-                  <input type="radio" [formControlName]="i" [value]="option">
-              </div>
-            </label>
-          </div>
-          <!-----------------------End Radio Button------------------>
-    
-          <!-----------------------For Checkbox Button------------------>
-          <div *ngSwitchCase="'Checkbox'">
-            <label [for]="i">
-              <div *ngFor="let option of FormFields[i].options; let j = index" [formArrayName]="i">
-                {{option}}
-                  <input type="checkbox" [formControlName]="j">
-              </div>
-            </label>
-          </div>
-          <!-----------------------End Checkbox Button------------------>
-    
-          <!-----------------------For Textbox Button------------------>
-          <div *ngSwitchCase="'Textbox'" class="form-group">
-            <label [for]="i">
-              <input type="text" [formControlName]="i"
-            </label>
-          </div>
-          <!----------------------End Textbox Button------------------>
-    
-          <!-----------------------For Paragraph Button------------------>
-          <div *ngSwitchCase="'Textarea'" class="form-group">
-            <label [for]="i">
-              <textarea [formControlName]="i"></textarea>
-            </label>
-          </div>
-          <!----------------------End Paragraph Button------------------>
-    
-          <!-----------------------For Dropbox Button------------------>
-          <div *ngSwitchCase="'Dropdown'" class="form-group">
-            <label [for]="i">
-              <select [formControlName]="i">
-                  <option selected disabled>Choose one</option>
-                <option *ngFor="let option of FormFields[i].options;let j=index" [selected]="option == ProfileDetails[FormFields[i].label]">{{option}}</option>
-              </select>
-            </label>
-          </div>
-           <!----------------------End Dropbox Button------------------>
-        </div>
-      </div>
-      <br>
-      <button class="btn btn-primary" type="submit">Save</button>
-    </form>
-  </li>
-</ul>
-</div>
