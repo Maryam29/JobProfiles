@@ -1,0 +1,208 @@
+<label>
+  Form Title :
+</label>
+<input [(ngModel)]="SelectedForm.FormTitle">
+<br>
+<label>
+  Form Type :
+</label>
+<select id="type" name="type" [(ngModel)]="SelectedForm.FormType" (change)="OnSelectFormType($event)" required>
+  <option *ngFor="let option of ApplicantType" [ngValue]="option._id" >{{option.type}}</option>
+</select>
+<br>
+<div class="alert alert-danger" *ngIf="Error">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    {{Error}}
+</div>
+
+<br>
+<div *ngFor="let section of SelectedForm.Sections; let sectionindex = index">
+    <label>Section Title</label>
+    <input [(ngModel)]="section.SectionName" [ngModelOptions]="{standalone: true}">
+    <div *ngFor="let item of section.Fields; let fieldindex = index;">
+        <div [ngSwitch]="item.FieldType">
+          <label>{{item.FieldType}}</label>
+          <!-----------------------For Radio Button------------------>
+          <div *ngSwitchCase="'Radio'" class="form-group">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}">
+            <ul>
+              <li *ngFor="let option of item.options; let optionindex = index">
+                <input [value]="option" (change)="OnOptionChange(sectionindex,fieldindex,$event.target.value,optionindex)">
+                <a (click)="RemoveOption(sectionindex,fieldindex,optionindex)">X</a>
+              </li>
+            </ul>
+            <a (click)="AddOption(sectionindex,fieldindex)">Add Options</a>
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!-----------------------End Radio Button------------------>
+    
+          <!-----------------------For Checkbox Button------------------>
+          <div *ngSwitchCase="'Checkbox'" class="form-group">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}">
+            <ul>
+              <li *ngFor="let option of item.options; let optionindex = index">
+                <input [value]="option" (change)="OnOptionChange(sectionindex,fieldindex,$event.target.value,optionindex)">
+                <a (click)="RemoveOption(sectionindex, fieldindex,optionindex)">X</a>
+              </li>
+            </ul>
+            <a (click)="AddOption(sectionindex,fieldindex)">Add Options</a>
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!-----------------------End Checkbox Button------------------>
+    
+          <!-----------------------For Dropbox Button------------------>
+          <div *ngSwitchCase="'Dropdown'" class="dropdown">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <ul>
+              <li *ngFor="let option of item.options; let optionindex = index">
+                <input [value]="option" (change)="OnOptionChange(sectionindex,fieldindex,$event.target.value,optionindex)">
+                <a (click)="RemoveOption(sectionindex,fieldindex,optionindex)">X</a>
+              </li>
+            </ul>
+            <a (click)="AddOption(sectionindex,fieldindex)">Add Options</a>
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!----------------------End Dropbox Button------------------>
+    
+          <!-----------------------For Textbox Button------------------>
+          <div *ngSwitchCase="'Textbox'" class="form-group">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}">
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+    
+          <!----------------------End Textbox Button------------------>
+    
+          <!-----------------------For TextArea Button------------------>
+          <div *ngSwitchCase="'Textarea'" class="form-group">
+            <input [(ngModel)]="item.FieldName" [value]="item.FieldName" [ngModelOptions]="{standalone: true}">
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!----------------------End TextArea Button------------------>
+
+          <!-----------------------For Calendar Button------------------>
+          <div *ngSwitchCase="'Calendar'" class="form-group">
+              <input [(ngModel)]="item.FieldName" [value]="item.FieldName" [ngModelOptions]="{standalone: true}">
+              <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+            </div>
+            <!----------------------End Calendar Button------------------>
+
+          <!-----------------------For Country List------------------>
+          <div *ngSwitchCase="'Country'">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+            <br>
+            *Take options from {{item.Table}} Library.
+          </div>
+          <!----------------------End Country List------------------>
+
+          <!-----------------------For State List------------------>
+          <div *ngSwitchCase="'State'">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <!-- <ul>
+              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
+                {{x.FieldName}}
+              </li>
+            </ul> -->
+            <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
+              <option selected disabled>Choose one</option>
+            <option *ngFor="let x of item.ParentField.FieldList;" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
+          </select>
+          <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!----------------------End State List------------------>
+
+          <!-----------------------For city List------------------>
+          <div *ngSwitchCase="'City'">
+              <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+              <!-- <ul>
+                <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
+                  {{x.FieldName}}
+                </li>
+              </ul> -->
+              <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
+                <option selected disabled>Choose one</option>
+              <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
+            </select>
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+            </div>
+            <!----------------------End city List------------------>
+
+           <!-----------------------For CompanyType List------------------>
+           <div *ngSwitchCase="'Type'">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+            <br>*Take options from {{item.Table}} Library.
+          </div>
+          <!----------------------End CompanyType List------------------>
+
+          <!-----------------------For Installation Type List------------------>
+          <div *ngSwitchCase="'InstallationType'">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <!-- <ul>
+              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
+                {{x.FieldName}}
+              </li>
+            </ul> -->
+            <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
+              <option selected disabled>Choose one</option>
+            <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
+          </select>
+          <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!----------------------End Installation Type List------------------>
+
+          <!-----------------------For Designation List------------------>
+          <div *ngSwitchCase="'Designation'">
+            <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
+            <!-- <ul>
+              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
+                {{x.FieldName}}
+              </li>
+            </ul> -->
+            <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
+              <option selected disabled>Choose one</option>
+            <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
+          </select>
+          <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
+          </div>
+          <!----------------------End Designation List------------------>
+        </div>
+      </div>
+      <br>
+      <table class="table-bordered table-condensed table-striped">
+        <tr>
+          <td colspan="2">
+            Field Manager
+        </td></tr>
+          <tr>
+            <td>Control Type</td>
+            <!-- <td>Option Count</td> -->
+            <td></td>
+          </tr>
+          <tr *ngFor="let control of controls">
+            <td>{{control.Type}}</td>
+            <!-- <td *ngIf="!control.isMultipleOption"></td>
+            <td *ngIf="control.isMultipleOption">
+              <input type="text" [(ngModel)]="control.optionCount">
+            </td> -->
+            <td>
+              <a (click)="AddField(sectionindex,control)">Add</a>
+            </td>
+          </tr>
+        </table>
+        <a (click)="RemoveSection(sectionindex)">Remove Section</a>
+        <br>
+        <input type="checkbox" [(ngModel)]="section.CanBeMultiple">Can be added Multiple Times.
+        <hr>
+</div>
+<a (click)="AddSection()">Add Section</a>
+<button class="btn btn-primary pull-right" *ngIf="TotalSections>0" (click)="OnSave()" type="submit">Save</button>
+<br>
+
+<div class="panel panel-danger" style="margin:10px" *ngIf="FormSuccessMessage == -1">
+    <div class="panel-body">Form couldn\'t be saved.</div>
+</div>
+
+<div class="panel panel-success"  style="margin:10px"  *ngIf="FormSuccessMessage == 1">
+    <div class="panel-body">Form saved Sucessfully.</div>
+</div>

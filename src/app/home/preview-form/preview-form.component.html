@@ -1,0 +1,115 @@
+    <h3>{{SelectedForm.FormTitle}}</h3>
+    <div *ngFor="let section of SelectedForm.Sections;">
+       <h4>{{section.SectionName}}</h4> 
+            <div *ngFor="let item of section.Fields;">
+                    <div [ngSwitch]="item.FieldType">
+                        <label>
+                            {{item.FieldName}}
+                        </label>
+                       <!-----------------------For Radio Button------------------>
+                       <div *ngSwitchCase="'Radio'" class="form-group">
+                         <div *ngFor="let option of item.options; let j = index" >
+                             <!-- <label class="radio-inline">{{option}}</label> -->
+                             {{option}}
+                             <input type="radio" [value]="option">
+                            </div>
+                       </div>
+                       <!-----------------------End Radio Button------------------>
+                 
+                       <!-----------------------For Checkbox Button------------------>
+                       <div *ngSwitchCase="'Checkbox'">
+                           <div *ngFor="let option of item.options; let j = index">
+                             {{option}}
+                               <input type="checkbox">
+                           </div>
+                       </div>
+                       <!-----------------------End Checkbox Button------------------>
+                 
+                       <!-----------------------For Textbox Button------------------>
+                       <div *ngSwitchCase="'Textbox'" class="form-group">
+                           <input type="text"/>
+                       </div>
+                       <!----------------------End Textbox Button------------------>
+                 
+                       <!-----------------------For Paragraph Button------------------>
+                       <div *ngSwitchCase="'Textarea'" class="form-group">
+                           <textarea></textarea>
+                       </div>
+                       <!----------------------End Paragraph Button------------------>
+                 
+                       <!-----------------------For Dropbox Button------------------>
+                       <div *ngSwitchCase="'Dropdown'" class="form-group">
+                           <select>
+                               <option selected disabled>Choose one</option>
+                             <option *ngFor="let option of item.options;let j=index">{{option}}</option>
+                           </select>
+                       </div>
+                        <!----------------------End Dropbox Button------------------>
+
+                        <!-----------------------For Calendar Button------------------>
+                       <div *ngSwitchCase="'Calendar'" class="form-group">
+                            <input type="date"/>
+                        </div>
+                         <!----------------------End Calendar Button------------------>
+
+                         <!-----------------------For Country Dropbox Button------------------>
+                       <div *ngSwitchCase="'Country'" class="form-group">
+                        <select>
+                            <option selected disabled>Choose one</option>
+                            Countries
+                          <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                        </select>
+                    </div>
+                     <!----------------------End Country Dropbox Button------------------>
+
+                     <!-----------------------For State Dropbox Button------------------>
+                     <div *ngSwitchCase="'State'" class="form-group">
+                            <select>
+                                <option selected disabled>Choose one</option>
+                                States in selected country
+                              <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                            </select>
+                        </div>
+                         <!----------------------End State Dropbox Button------------------>
+
+                         <!-----------------------For City Dropbox Button------------------>
+                     <div *ngSwitchCase="'City'" class="form-group">
+                            <select>
+                                <option selected disabled>Choose one</option>
+                                City in selected country
+                              <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                            </select>
+                        </div>
+                         <!----------------------End City Dropbox Button------------------>
+
+                         <!-----------------------For CustomerType Dropbox Button------------------>
+                       <div *ngSwitchCase="'Type'" class="form-group">
+                            <select>
+                                <option selected disabled>Choose one</option>
+                            Customer Type
+                              <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                            </select>
+                        </div>
+                         <!----------------------End CustomerType Dropbox Button------------------>
+    
+                         <!-----------------------For Installation Type Dropbox Button------------------>
+                         <div *ngSwitchCase="'InstallationType'" class="form-group">
+                                <select>
+                                    <option selected disabled>Choose one</option>
+                                    Installation Types in the selected Customer Type
+                                  <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                                </select>
+                            </div>
+                             <!----------------------End Installation Type Dropbox Button------------------>
+                              <!-----------------------For Designation Dropbox Button------------------>
+                         <div *ngSwitchCase="'Designation'" class="form-group">
+                                <select>
+                                    <option selected disabled>Choose one</option>
+                                    Designation in the selected Installation Type
+                                  <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
+                                </select>
+                            </div>
+                             <!----------------------End Designation Dropbox Button------------------>
+                     </div>
+                   </div><hr>
+    </div>
