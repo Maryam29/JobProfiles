@@ -1,4 +1,3 @@
-
 <div class="col-md-2">
   <ul>
     <li *ngFor="let item of TemplatesList;let j=index">
@@ -9,34 +8,49 @@
 </div>
 
 <div class="col-md-6" *ngIf="createMode">
-  <select id="type" name="type"  (change)="OnSelectForm($event)">
+  <select id="type" name="type" (change)="OnSelectForm($event)">
+    <option selected disabled>Select Form</option>
     <option *ngFor="let option of FormsList;let j=index">
       {{option.FormTitle}}
     </option>
   </select>
-  Template Title:
+  <label>
+    Template Title:
+  </label>
   <input type="text" [(ngModel)]="TemplateTitle">
   <div *ngFor="let section of SelectedForm.Sections; let secindex= index">
-    {{section.SectionName}}<br>
-
+    {{section.SectionName}}
+    <br>
     <ng-container *ngFor="let field of section.Fields;let fieldindex=index">
       <input type="checkbox" [checked]="field.isFieldChecked" (change)="ToggleFieldSelection(secindex,fieldindex)">
-      <label>{{field.FieldName}}<br></label>
+      <label>{{field.FieldName}}</label>
+      <br>
     </ng-container>
-    
     <hr>
   </div>
+  <button class="btn btn-primary" (click)="OnSaveTemplate()" *ngIf="TotalFieldsChecked>0">Save Template</button>
+  <br>
+  <div class="panel panel-danger" style="margin:10px" *ngIf="TemplateSaved == -1">
+    <div class="panel-body">Template couldn\'t be saved.</div>
+  </div>
 
-  <button (click)="OnSaveTemplate()" *ngIf="TotalFieldsChecked>0">Save Template</button>
+  <div class="panel panel-success" style="margin:10px" *ngIf="TemplateSaved == 1">
+    <div class="panel-body">Template saved Sucessfully.</div>
+  </div>
 </div>
 
-<div class="col-md-4" *ngIf="createMode">{{TemplateTitle}}
+<div class="col-md-4" *ngIf="createMode">
+  <h3>{{TemplateTitle}}</h3>
   <div *ngFor="let section of SelectedForm.Sections;let secindex= index">
     <ng-container *ngIf="CheckedFieldCount(secindex) > 0">
-        {{section.SectionName}}<br>
+      <h4>
+        {{section.SectionName}}
+      </h4>
+      <br>
     </ng-container>
     <ng-container *ngFor="let field of section.Fields;let fieldindex=index">
-      <label *ngIf="field.isFieldChecked">{{field.FieldName}}<br></label>
+      <label *ngIf="field.isFieldChecked">{{field.FieldName}}</label>
+      <br>
     </ng-container>
     <hr>
   </div>

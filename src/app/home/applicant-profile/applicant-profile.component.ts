@@ -22,7 +22,7 @@ export class ApplicantProfileComponent implements OnInit {
     this.Applicant = {};
 
     this.route.params.subscribe((params: Params) => {
-      let id = params['id'];
+      const id = params['id'];
       this.customFormService.GetApplicantProfile(id).subscribe((obj) => {
         if (obj) {
           this.Applicant = obj;
@@ -41,9 +41,9 @@ export class ApplicantProfileComponent implements OnInit {
 
   OnSelectForm() {
     // Inititally all the fields of the form are displayed.
-    for (var sec = 0; sec < this.Form.Sections.length; sec++) {
-      var currsec = this.Form.Sections[sec];
-      for (var findex = 0; findex < currsec.Fields.length; findex++) {
+    for (let sec = 0; sec < this.Form.Sections.length; sec++) {
+      const currsec = this.Form.Sections[sec];
+      for (let findex = 0; findex < currsec.Fields.length; findex++) {
         currsec.Fields[findex].isFieldChecked = true;
       }
     }
@@ -53,7 +53,7 @@ export class ApplicantProfileComponent implements OnInit {
     if (this.Applicant[SectionID]) {
       return this.Applicant[SectionID][index][FieldID];
     }
-    return "";
+    return '';
   }
 
   GetSectionCount(SectionID) {
@@ -71,47 +71,45 @@ export class ApplicantProfileComponent implements OnInit {
     });
   }
 
-  CheckedFieldCount(secindex){
-    return this.Form.Sections[secindex].Fields.filter((field) =>{
-      return field.isFieldChecked == true;
+  CheckedFieldCount(secindex) {
+    return this.Form.Sections[secindex].Fields.filter((field) => {
+      return field.isFieldChecked === true;
     }).length;
   }
 
   OnSelectTemplate(val) {
-    let index: number = val.target["selectedIndex"];
+    const index: number = val.target['selectedIndex'];
 
-    if (index == 0) {
+    if (index === 0) {
       this.OnSelectForm();
-    }
-    else {
-      var SelectedTemplate = this.TemplateList[index-1];
-      let Section = {};
+    }else {
+      const SelectedTemplate = this.TemplateList[index - 1];
+      const Section = {};
 
-      for (var sec = 0; sec < this.Form.Sections.length; sec++) {
-        var currsec = this.Form.Sections[sec];
+      for (let sec = 0; sec < this.Form.Sections.length; sec++) {
+        const currsec = this.Form.Sections[sec];
         Section[currsec.SectionID] = sec; // storing the index
       }
 
-      for (var i = 0; i < SelectedTemplate.Sections.length; i++) {
-        var templatesec = SelectedTemplate.Sections[i];
+      for (let i = 0; i < SelectedTemplate.Sections.length; i++) {
+        const templatesec = SelectedTemplate.Sections[i];
 
         // If Section is present in template section look for fields in Template
         if (Section.hasOwnProperty(templatesec.SectionID)) {
-          let secindex = Section[templatesec.SectionID]
+          const secindex = Section[templatesec.SectionID];
 
-          var currsec = this.Form.Sections[secindex];
-          var formfields = currsec.Fields;
+          const currsec = this.Form.Sections[secindex];
+          const formfields = currsec.Fields;
 
-          for (var findex = 0; findex < formfields.length; findex++) {
+          for (let findex = 0; findex < formfields.length; findex++) {
 
-            var isFieldpresent = templatesec.Fields.filter((field) => {
-              return field == formfields[findex].FieldID;
+            const isFieldpresent = templatesec.Fields.filter((field) => {
+              return field === formfields[findex].FieldID;
             });
 
             if (isFieldpresent.length) {
               currsec.Fields[findex].isFieldChecked = true;
-            }
-            else {
+            }else {
               currsec.Fields[findex].isFieldChecked = false;
             }
 
@@ -124,22 +122,22 @@ export class ApplicantProfileComponent implements OnInit {
   }
 
   PrintToPdf() {
-    console.log("Export to pdf");
+    console.log('Export to pdf');
 
-    let doc = new jsPDF();
-    let specialElementHandlers = {
+    const doc = new jsPDF();
+    const specialElementHandlers = {
       '#editor': function (element, renderer) {
         return true;
       }
     };
-    let content = this.ApplicantProfile.nativeElement;
+    const content = this.ApplicantProfile.nativeElement;
     doc.fromHTML(content.innerHTML, 15, 15, {
       'width': 190,
       'elementHandlers': specialElementHandlers
     });
 
     console.log(content);
-    var filename = "Applicant" + this.Applicant._id + ".pdf"
+    const filename = 'Applicant' + this.Applicant._id + '.pdf';
     doc.save(filename);
   }
 }

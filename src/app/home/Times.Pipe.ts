@@ -4,7 +4,7 @@ import { PipeTransform, Pipe } from '@angular/core';
     {name: 'times'}
 )
 export class TimesPipe implements PipeTransform {
-  transform(value) : any {
+  transform(value): any {
     return (new Array(value)).fill(1);
   }
 }

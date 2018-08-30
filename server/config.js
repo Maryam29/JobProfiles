@@ -2,8 +2,8 @@ const MongoClient = require("mongodb").MongoClient;
 ObjectID = require('mongodb').ObjectID;
 var _db;
 
-const connectoToServer = (callback)=>{
-var url = 'mongodb://localhost:27017/';
+const connectToServer = (callback)=>{
+var url = 'mongodb://localhost:27017/crewmanagementportal';
 MongoClient.connect(url,(err,db)=>{
     _db = db.db("crewmanagementportal");
     return callback(err);
@@ -82,10 +82,10 @@ const findOneAndUpdate = async(col,oldval, newval)=>{
 const getIfFieldExist = async(col,field)=>{
     try {
         // console.log(col);
-        console.log(field);
-        field = "5b1539c2f5e086aa37d87b6b";
-        const results = await _db.collection(col).find({"5b1539c2f5e086aa37d87b6b":{$exists:true}}).toArray();
-        console.log(results);
+        const results = await _db.collection(col).find({"5b8552293763452b047283cd":{$exists:true}}).toArray();
+        const results1 = await _db.collection(col).find({field:{$exists:true}}).toArray();
+        // console.log(results);
+        // console.log(results1);
         return results
     } catch (e) {
         throw e
@@ -115,7 +115,7 @@ const updateOrInsert = async(col,oldval, newval)=>{
 const disconnectDB = () => _db.close()
 
 module.exports = {
-    connectoToServer,
+    connectToServer,
     getDb,
     insertOne,
     updateOne,

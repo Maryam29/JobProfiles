@@ -61,7 +61,7 @@ app.use(passport.session()); // persistent login sessions
     passport.deserializeUser(function (id, done) {
         console.log("Inside deserialization");
         try{
-            Database.connectoToServer(async(err)=>{
+            Database.connectToServer(async(err)=>{
                 var rows = await Database.findOne('ApplicantInfo',{_id:ObjectID(id)});
                 //console.log(rows);
                 done(null,rows);
@@ -77,7 +77,7 @@ app.use(passport.session()); // persistent login sessions
     },
     (req, username, password, done) => { // verification function
 
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
             
@@ -120,7 +120,7 @@ app.use(passport.session()); // persistent login sessions
             // we are checking to see if the user trying to login already exists
                 //if there is no user with that email,create the user
             
-            Database.connectoToServer(async(err)=>{
+            Database.connectToServer(async(err)=>{
                 if(err)
                 throw err;
                 
@@ -314,7 +314,7 @@ isExistingAccount = (phoneno) =>{
     try{
         //console.log("isExistingAccount");
         return new Promise((resolve, reject) =>{
-            Database.connectoToServer(async(err)=>{
+            Database.connectToServer(async(err)=>{
                 if(err)
                 throw err;
                 
@@ -356,7 +356,7 @@ StoreOTPDB = async(otp, phoneno)=>{
         ExpiryTime = moment(ExpiryTime).toISOString();
 
         return new Promise(async(resolve, reject) => {
-            Database.connectoToServer(async(err)=>{
+            Database.connectToServer(async(err)=>{
                 var user = {phoneNo:phoneno};
                 var rows = await Database.findOne('ApplicantInfo',user);
                 if(!rows || rows.length == 0){
@@ -396,22 +396,22 @@ StoreOTPDB = async(otp, phoneno)=>{
         }
 }
 
-app.get('/check',async(req,res) => {
-    try{
-        var ExpiryTime = new Date();
-        var Duration = 1; // expiry time 1 min for testing purposes
-        ExpiryTime.setMinutes(ExpiryTime.getMinutes()+Duration);
-        ExpiryTime = moment(ExpiryTime).toISOString();
-        phoneno='9425645230';
-        otp='4365';
-        Database.connectoToServer(async(err)=>{
+// app.get('/check',async(req,res) => {
+//     try{
+//         var ExpiryTime = new Date();
+//         var Duration = 1; // expiry time 1 min for testing purposes
+//         ExpiryTime.setMinutes(ExpiryTime.getMinutes()+Duration);
+//         ExpiryTime = moment(ExpiryTime).toISOString();
+//         phoneno='9425645230';
+//         otp='4365';
+//         Database.connectToServer(async(err)=>{
             
-        });
-    }
-    catch(e){
-           throw e;
-        }
-})
+//         });
+//     }
+//     catch(e){
+//            throw e;
+//         }
+// })
 
 CheckifOTPisValid = async(otp, phoneno)=>{
     console.log("CheckifOTPisValid");
@@ -420,7 +420,7 @@ CheckifOTPisValid = async(otp, phoneno)=>{
         CurentTime = moment(CurrentTime).format('YYYY-MM-DD H:mm:ss');
 
         return new Promise(async(resolve, reject) => {
-            Database.connectoToServer(async(err)=>{
+            Database.connectToServer(async(err)=>{
                 var user = {phoneNo:phoneno,OTP:otp};
                 //console.log(user);
                 var rows = await Database.findOne('ApplicantInfo',user);
@@ -465,7 +465,7 @@ CheckifOTPisValid = async(otp, phoneno)=>{
 }
 
 app.get('/getformcontrols',async(req,res) => {
-   Database.connectoToServer(async(err)=>{
+   Database.connectToServer(async(err)=>{
             if(err)
             throw err;
             
@@ -482,7 +482,7 @@ app.get('/getformcontrols',async(req,res) => {
 })
 
 app.get('/getApplicantType',async(req,res) => {
-    Database.connectoToServer(async(err)=>{
+    Database.connectToServer(async(err)=>{
              if(err)
              throw err;
              
@@ -498,37 +498,12 @@ app.get('/getApplicantType',async(req,res) => {
          });
  })
 
-app.post('/saveForm', (req, res) => {
-    //console.log("SaveForm");
-    try{
-        Database.connectoToServer(async(err)=>{
-            if(err)
-            throw err;
-            
-            //console.log(req.body);
-            if(req.body._id){
-                //console.log("Update");
-                req.body._id = Database.ObjectID(req.body._id);
-                var rows = await Database.updateOrInsert('Forms',{_id:req.body._id},req.body);
-            }
-            else{
-                //console.log("Insert");
-                var rows = await Database.insertOne('Forms',req.body);
-            }
-            console.log(rows);
-            res.send(rows);
-        })
-    }
-    catch(e){
-        res.send(e);
-    }
-})
 
 app.post('/getForm', (req, res) => {
     //console.log("getForm");
     type = req.body.type;
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -548,11 +523,51 @@ app.post('/getForm', (req, res) => {
 app.get('/getAllForms', (req, res) => {
     //console.log("getForm");
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
             var rows = await Database.getAll('Forms');
+            console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.get('/getAllCountries', (req, res) => {
+    // console.log("getForm");
+    try{
+        Database.connectToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getAll('Countries');
+            //console.log(rows);
+            if(rows)
+            res.send(rows);
+            else
+            res.send({});
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+app.get('/getAllCompanyTypes', (req, res) => {
+    // console.log("getForm");
+    try{
+        Database.connectToServer(async(err)=>{
+            if(err)
+            throw err;
+
+            var rows = await Database.getAll('CustomerDetails');
             //console.log(rows);
             if(rows)
             res.send(rows);
@@ -568,7 +583,7 @@ app.get('/getAllForms', (req, res) => {
 app.get('/getAllTemplates', (req, res) => {
     //console.log("getForm");
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -588,7 +603,7 @@ app.get('/getAllTemplates', (req, res) => {
 app.get('/getAllApplicants', (req, res) => {
     //console.log("getForm");
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -607,7 +622,7 @@ app.get('/getAllApplicants', (req, res) => {
 
 app.post('/GetAllApplicantsPersonalDetails', (req, res) => {
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -627,7 +642,7 @@ app.post('/GetAllApplicantsPersonalDetails', (req, res) => {
 app.post('/getTemplatesByFormID', (req, res) => {
     formid = req.body.formID;
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -649,7 +664,7 @@ app.post('/saveApplicantData', (req, res) => {
     ApplicantDetails = req.body;
     //console.log(ApplicantDetails);
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -671,17 +686,18 @@ app.post('/saveTemplate', (req, res) => {
     template = req.body;
     //console.log(ApplicantDetails);
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
-
-            template._id = Database.ObjectID(template._id);
-            var rows = await Database.updateOrInsert('Templates',{_id:template._id},template);
+            if(template._id){
+                template._id = Database.ObjectID(template._id);
+                var rows = await Database.updateOrInsert('Templates',{_id:template._id},template);
+            }
+            else{
+                var rows = await Database.insertOne('Templates',template);
+            }
             
-            if(rows)
             res.send(rows);
-            else
-            res.send({});
         })
     }
     catch(e){
@@ -689,12 +705,37 @@ app.post('/saveTemplate', (req, res) => {
     }
 });
 
+app.post('/saveForm', (req, res) => {
+    //console.log("SaveForm");
+    try{
+        Database.connectToServer(async(err)=>{
+            if(err)
+            throw err;
+            if(req.body._id){
+                //console.log("Update");
+                req.body._id = Database.ObjectID(req.body._id);
+                var rows = await Database.updateOrInsert('Forms',{_id:req.body._id},req.body);
+            }
+            else{
+                //console.log("Insert");
+                var rows = await Database.insertOne('Forms',req.body);
+            }
+            //console.log(rows);
+            res.send(rows);
+        })
+    }
+    catch(e){
+        res.send(e);
+    }
+})
+
+
 app.post('/UpdateApplicantProfile', (req, res) => {
     oldobj = req.body.oldobj;
     newobj = req.body.newobj;
 
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
@@ -718,14 +759,14 @@ app.post('/UpdateApplicantProfile', (req, res) => {
 app.post('/getApplicantProfile', (req, res) => {
     id = req.body._id;
     try{
-        Database.connectoToServer(async(err)=>{
+        Database.connectToServer(async(err)=>{
             if(err)
             throw err;
 
             const _id = Database.ObjectID(id);
-            console.log(_id);
+            //console.log(_id);
             var rows = await Database.findOne('ApplicantData',{_id:_id});
-            console.log(rows);
+            //console.log(rows);
             if(rows)
             res.send(rows);
             else

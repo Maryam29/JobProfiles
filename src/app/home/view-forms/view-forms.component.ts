@@ -9,41 +9,40 @@ import { SectionModel } from '../Section.model';
   styleUrls: ['./view-forms.component.css']
 })
 export class ViewFormsComponent implements OnInit {
-  FormsList : FormModel[];
-  SelectedForm : FormModel;
-  isSelected:boolean = false;
-  FormsCount:number = 0;
-  constructor(private customFormService:CustomFormService){}
+  FormsList: FormModel[];
+  SelectedForm: FormModel;
+  isSelected: Boolean = false;
+  FormsCount: Number = 0;
+  constructor(private customFormService: CustomFormService) {}
 
   ngOnInit() {
     this.getAllForms();
   }
 
-  OnSelectForm(index){
+  OnSelectForm(index) {
     this.isSelected = true;
-    //console.log(this.FormsList[index]);
     this.SelectedForm = this.FormsList[index];
+    console.log(this.SelectedForm);
   }
 
-  OnSaveForm(event){
+  OnSaveForm(event) {
     this.SelectedForm = event;
     this.isSelected = true;
     this.getAllForms();
   }
 
-  CreateNewForm(){
+  CreateNewForm() {
     this.SelectedForm = new FormModel();
     this.SelectedForm.Sections = new Array<SectionModel>();
     this.isSelected = true;
   }
 
-  getAllForms(){
-    this.customFormService.GetAllForms().subscribe(obj =>{
-      if(obj && obj.length){
+  getAllForms() {
+    this.customFormService.GetAllForms().subscribe(obj => {
+      if (obj && obj.length) {
         this.FormsList = obj;
         this.FormsCount = this.FormsList.length;
       }
-    })
+    });
   }
-
 }

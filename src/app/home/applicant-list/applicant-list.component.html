@@ -27,6 +27,7 @@
         <th *ngFor="let col of SelectedType.fields">
           {{col.FieldName}}
         </th>
+        <th></th>
       </tr>
       <ng-container *ngFor="let applicant of SelectedType.applicants;let j=index">
           <tr *ngIf="isApplicantFiltered[j]">

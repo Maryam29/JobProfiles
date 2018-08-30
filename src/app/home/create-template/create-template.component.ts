@@ -14,12 +14,13 @@ export class CreateTemplateComponent implements OnInit {
   TemplatesList: any[];
   FormsList: FormModel[];
   isFieldChecked: any[];
-  SelectedForm:FormModel;
+  SelectedForm: FormModel;
   createMode: boolean;
   FieldCheckedCount: number;
   TemplateTitle: string;
-  TemplateID:string;
+  TemplateID: string;
   TotalFieldsChecked: number;
+  TemplateSaved = 0;
 
   constructor(private customFormService: CustomFormService) { }
 
@@ -45,50 +46,49 @@ export class CreateTemplateComponent implements OnInit {
   }
 
   OnEditTemplate(index) {
-    var SelectedTemplate = this.TemplatesList[index];
+    const SelectedTemplate = this.TemplatesList[index];
     this.TemplateTitle = SelectedTemplate.TemplateTitle;
     this.TemplateID = SelectedTemplate._id;
-    var Form = this.FormsList.filter(form => {
-      return form._id == SelectedTemplate.FormID;
+    const Form = this.FormsList.filter(form => {
+      return form._id === SelectedTemplate.FormID;
     });
 
     if (Form.length) {
       this.SelectedForm = Form[0];
       this.TotalFieldsChecked = 0;
-      var Section = {};
+      const Section = {};
 
       // Check if Form section is present in the selected Template Sections
-      for (var sec = 0; sec < this.SelectedForm.Sections.length; sec++) {
-        var currsec = this.SelectedForm.Sections[sec];
+      for (let sec = 0; sec < this.SelectedForm.Sections.length; sec++) {
+        const currsec = this.SelectedForm.Sections[sec];
         Section[currsec.SectionID] = sec; // storing the index
       }
 
-      for (var i = 0; i < SelectedTemplate.Sections.length; i++) {
-        var templatesec = SelectedTemplate.Sections[i];
+      for (let i = 0; i < SelectedTemplate.Sections.length; i++) {
+        const templatesec = SelectedTemplate.Sections[i];
 
         // If Section is present in template section look for fields in Template
         if (Section.hasOwnProperty(templatesec.SectionID)) {
-          let secindex = Section[templatesec.SectionID]
+          const secindex = Section[templatesec.SectionID];
 
-          var currsec = this.SelectedForm.Sections[secindex];
-          var formfields = currsec.Fields;
+          const currsec = this.SelectedForm.Sections[secindex];
+          const formfields = currsec.Fields;
 
-          for (var findex = 0; findex < formfields.length; findex++) {
+          for (let findex = 0; findex < formfields.length; findex++) {
 
-            var isFieldpresent = templatesec.Fields.filter((field) => {
-              return field == formfields[findex].FieldID;
+            const isFieldpresent = templatesec.Fields.filter((field) => {
+              return field === formfields[findex].FieldID;
             });
 
             if (isFieldpresent.length) {
               currsec.Fields[findex].isFieldChecked = true;
               this.TotalFieldsChecked++;
-            }
-            else {
+            }else {
               currsec.Fields[findex].isFieldChecked = false;
             }
 
           }
-          //console.log(this.SelectedForm);
+          // console.log(this.SelectedForm);
         }
       }
     }
@@ -97,11 +97,11 @@ export class CreateTemplateComponent implements OnInit {
 
   OnSelectForm(val) {
 
-    let index: number = val.target["selectedIndex"];
-    this.SelectedForm = this.FormsList[index];
-    for (var sec = 0; sec < this.SelectedForm.Sections.length; sec++) {
-      var currsec = this.SelectedForm.Sections[sec];
-      for (var findex = 0; findex < currsec.Fields.length; findex++) {
+    const index: number = val.target['selectedIndex'];
+    this.SelectedForm = this.FormsList[index - 1]; // 'Select Form is also 0th option'
+    for (let sec = 0; sec < this.SelectedForm.Sections.length; sec++) {
+      const currsec = this.SelectedForm.Sections[sec];
+      for (let findex = 0; findex < currsec.Fields.length; findex++) {
         currsec.Fields[findex].isFieldChecked = true;
         this.TotalFieldsChecked++;
       }
@@ -109,58 +109,64 @@ export class CreateTemplateComponent implements OnInit {
   }
 
   ToggleFieldSelection(secindex, fieldindex) {
-    this.SelectedForm.Sections[secindex].Fields[fieldindex].isFieldChecked = !this.SelectedForm.Sections[secindex].Fields[fieldindex].isFieldChecked;
-
+    this.SelectedForm.Sections[secindex].Fields[fieldindex].isFieldChecked = !this.SelectedForm.Sections[secindex].Fields[fieldindex]
+                                                                                                                  .isFieldChecked;
     if (this.SelectedForm.Sections[secindex].Fields[fieldindex].isFieldChecked) {
       this.TotalFieldsChecked++;
-    }
-    else {
+    }else {
       this.TotalFieldsChecked--;
     }
   }
 
-  CheckedFieldCount(secindex){
-    return this.SelectedForm.Sections[secindex].Fields.filter((field) =>{
-      return field.isFieldChecked == true;
+  CheckedFieldCount(secindex) {
+    return this.SelectedForm.Sections[secindex].Fields.filter((field) => {
+      return field.isFieldChecked === true;
     }).length;
   }
 
   OnCreateTemplate() {
     this.createMode = true;
     this.SelectedForm = new FormModel();
-    this.TemplateTitle = "Template Title";
+    this.TemplateTitle = 'Template Title';
     this.TemplateID = null;
     this.SelectedForm.Sections = new Array();
     this.TotalFieldsChecked = 0;
   }
 
   OnSaveTemplate() {
-    var template = { FormID: this.SelectedForm._id, FormType: this.SelectedForm.FormType, TemplateTitle: this.TemplateTitle, _id:this.TemplateID };
-    template["Sections"] = new Array();
+    const template = {
+      FormID: this.SelectedForm._id,
+      FormType: this.SelectedForm.FormType,
+      TemplateTitle: this.TemplateTitle,
+      _id: this.TemplateID
+    };
+    template['Sections'] = new Array();
 
-    for (var secindex = 0; secindex < this.SelectedForm.Sections.length; secindex++) {
-      var fields = this.SelectedForm.Sections[secindex].Fields;
-      var currsec = this.SelectedForm.Sections[secindex];
+    for (let secindex = 0; secindex < this.SelectedForm.Sections.length; secindex++) {
+      const fields = this.SelectedForm.Sections[secindex].Fields;
+      const currsec = this.SelectedForm.Sections[secindex];
 
-      var checkedfields = fields.filter(field => {
-        return field.isFieldChecked == true;
+      const checkedfields = fields.filter(field => {
+        return field.isFieldChecked === true;
       }).map(field => {
         return field.FieldID;
       });
 
       if (checkedfields.length > 0) {
-        var currobj = {};
-        currobj["SectionID"] = currsec.SectionID;
-        currobj["Fields"] = checkedfields;
-        template["Sections"].push(currobj);
+        const currobj = {};
+        currobj['SectionID'] = currsec.SectionID;
+        currobj['Fields'] = checkedfields;
+        template['Sections'].push(currobj);
       }
-
     }
 
     this.customFormService.SaveTemplate(template).subscribe((obj) => {
       if (obj) {
         this.GetAllTemplates();
+        this.TemplateSaved = 1;
+      }else {
+        this.TemplateSaved = -1;
       }
-    })
+    });
   }
 }
