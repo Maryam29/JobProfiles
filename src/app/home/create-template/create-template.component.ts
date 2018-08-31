@@ -21,6 +21,8 @@ export class CreateTemplateComponent implements OnInit {
   TemplateID: string;
   TotalFieldsChecked: number;
   TemplateSaved = 0;
+  FormLoaded = false;
+  TemplatesLoaded = false;
 
   constructor(private customFormService: CustomFormService) { }
 
@@ -31,6 +33,7 @@ export class CreateTemplateComponent implements OnInit {
 
   GetAllTemplates() {
     this.customFormService.GetAllTemplates().subscribe(obj => {
+      this.TemplatesLoaded = true;
       if (obj && obj.length) {
         this.TemplatesList = obj;
       }
@@ -39,6 +42,7 @@ export class CreateTemplateComponent implements OnInit {
 
   GetAllForms() {
     this.customFormService.GetAllForms().subscribe(obj => {
+      this.FormLoaded = true;
       if (obj && obj.length) {
         this.FormsList = obj;
       }

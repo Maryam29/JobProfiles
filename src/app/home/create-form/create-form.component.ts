@@ -99,30 +99,7 @@ export class CreateFormComponent implements OnInit, OnChanges {
     newSection.SectionName = 'Section ' +  this.TotalSections;
     newSection.CanBeMultiple = false;
     newSection.Fields = new Array<FieldModel>();
-    // let fieldcount = 0;
-    // Add Fields logic
-    // for (let i = 0; i < this.totalcontrols; i++) {
-    //   {
-    //     for (let j = 0; j < this.controls[i].Total; j++) {
-    //       const newField = new FieldModel();
-    //       newField.FieldID = ObjectID();
-    //       newField.FieldName = 'Field ' +  fieldcount;
-    //       newField.FieldType = this.controls[i].Type;
-    //       newField.options = new Array();
-    //       const optioncount = this.controls[i].optionCount;
-
-    //       for (let count = 0; count < optioncount; count++) {
-    //         const optionlabel = 'Option ' + count;
-    //         newField.options.push(optionlabel);
-    //       }
-
-    //       newSection.Fields.push(newField);
-    //       fieldcount++;
-    //     }
-    //   }
-    // }
     this.SelectedForm.Sections.push(newSection);
-    // console.log(this.SelectedForm.Sections);
     this.TotalSections++;
   }
 
@@ -162,15 +139,16 @@ export class CreateFormComponent implements OnInit, OnChanges {
     for (let secind = 0; secind < this.SelectedForm.Sections.length; secind++) {
        FieldList = this.SelectedForm.Sections[secind].Fields.filter( field => {
         return field.FieldType === ParentFieldType;
-      }).map(elem => {
+      }).map((elem, findex) => {
         return {
           FieldID: elem.FieldID.toString(),
-          FieldName: elem.FieldName,
+          FieldName: elem.FieldName + '(' + this.SelectedForm.Sections[secind].SectionName + ',' + findex + ')',
+          // If same freld Name for multiple Columns, So specify Sectioname and Field Index
           SectionID: this.SelectedForm.Sections[secind].SectionID.toString()
         };
       });
       if (FieldList.length > 0) {
-        // Merge the Dependency List Array with FieldList(List of Fields with Parent Field Type) obtained above.
+        // Merge the Parent List Array with FieldList(List of Fields with Parent Field Type) obtained above.
         Array.prototype.push.apply(CurrField.ParentField.FieldList, FieldList);
       }
     }
@@ -251,7 +229,6 @@ export class CreateFormComponent implements OnInit, OnChanges {
   }
   // Remove this Field from Curr Section Fields Array
   this.SelectedForm.Sections[sectionindex].Fields.splice(fieldindex, 1);
-
   }
 
   GetFieldName(sectionId, fieldId) {

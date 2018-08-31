@@ -13,16 +13,18 @@ export class ViewFormsComponent implements OnInit {
   SelectedForm: FormModel;
   isSelected: Boolean = false;
   FormsCount: Number = 0;
+  isFormsLoaded = false;
   constructor(private customFormService: CustomFormService) {}
 
   ngOnInit() {
+    console.log(this.isFormsLoaded);
     this.getAllForms();
   }
 
   OnSelectForm(index) {
     this.isSelected = true;
     this.SelectedForm = this.FormsList[index];
-    console.log(this.SelectedForm);
+    // console.log(this.SelectedForm);
   }
 
   OnSaveForm(event) {
@@ -39,6 +41,8 @@ export class ViewFormsComponent implements OnInit {
 
   getAllForms() {
     this.customFormService.GetAllForms().subscribe(obj => {
+      this.isFormsLoaded = true;
+      console.log(this.isFormsLoaded);
       if (obj && obj.length) {
         this.FormsList = obj;
         this.FormsCount = this.FormsList.length;

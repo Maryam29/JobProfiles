@@ -28,6 +28,7 @@ export class ApplicantFormComponent implements OnInit {
     ActualForm: FormModel; // Actual Form created by Admin for specific Aplicant Type.
     isSelected: any[];
     isFormSaved = 0;
+    isFormLoaded = false;  // It checks whether in the begining Empty or Filled Form is loaded
     // When Form is partially filled.0: form in no-edit state, 1: Changes Saved, -1: Changes not saved due to error,2:in edit/remove/add
     constructor(private customFormService: CustomFormService, private authService: AuthService,
         private fb: FormBuilder, private customListService: CustomListService) { }
@@ -335,6 +336,7 @@ export class ApplicantFormComponent implements OnInit {
                // console.log(FormAllSections);
                // console.log(this.FormLayout);
             }
+            this.isFormLoaded = true;
         });
     }
 
@@ -399,6 +401,7 @@ export class ApplicantFormComponent implements OnInit {
                     // console.log(FormAllSections);
                 }
             }
+            this.isFormLoaded = true;
         });
     }
 

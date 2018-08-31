@@ -13,9 +13,10 @@ import { SectionModel } from '../Section.model';
 export class ApplicantListComponent implements OnInit {
   AllApplicants: any[];
   FormsList: FormModel[];
-  ApplicantsDetails: any[];
+  ApplicantsDetails: any[] = new Array();
   FilterText: string;
   userFilter: any = {};
+  isApplicantDetailsLoaded = false;
   PersonalDetailsID = '5b8552293763452b047283cd';  // Should be same across all the forms
 
   SelectedType = {
@@ -33,6 +34,7 @@ export class ApplicantListComponent implements OnInit {
   ngOnInit() {
 
     this.customFormService.GetAllApplicantsPersonalDetails(this.PersonalDetailsID).subscribe(obj => {
+      this.isApplicantDetailsLoaded = true;
       if (obj && obj.length) {
         this.AllApplicants = obj;
 
@@ -99,13 +101,12 @@ export class ApplicantListComponent implements OnInit {
    }
 
   CategorizeApplicant() {
-    this.ApplicantsDetails = new Array();
 
     this.FormsList.forEach((form) => {
       const obj = {};
       obj['type'] = form.FormTypeName; // form type
       obj['fields'] = [];
-      console.log(form);
+      // console.log(form);
       const section = form.Sections.filter(s => {
         return s.SectionID.includes(this.PersonalDetailsID);
       });

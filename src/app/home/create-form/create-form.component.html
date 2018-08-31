@@ -1,12 +1,12 @@
 <label>
   Form Title :
 </label>
-<input [(ngModel)]="SelectedForm.FormTitle">
+<input [(ngModel)]="SelectedForm.FormTitle" class="form-group">
 <br>
 <label>
   Form Type :
 </label>
-<select id="type" name="type" [(ngModel)]="SelectedForm.FormType" (change)="OnSelectFormType($event)" required>
+<select class="form-group" id="type" name="type" [(ngModel)]="SelectedForm.FormType" (change)="OnSelectFormType($event)" required>
   <option *ngFor="let option of ApplicantType" [ngValue]="option._id" >{{option.type}}</option>
 </select>
 <br>

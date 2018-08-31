@@ -1,68 +1,51 @@
-<h3>{{Form.FormTitle}}</h3>
-
-<select (change)="OnSelectTemplate($event)">
-  <option selected disabled>Select Template</option>
-  <option *ngFor="let col of TemplateList;let j=index">{{col.TemplateTitle}}</option>
-</select>
-
-<div #ApplicantProfile>
-  <div *ngFor="let section of Form.Sections;let secindex = index">
-    <h4>{{section.SectionName}}</h4>
-
-    <!-- Sections that cannot be multiple in Non Edit Mode -->
-    <ng-container *ngIf="!section.CanBeMultiple">
-      <div *ngFor="let field of section.Fields; let fieldindex = index">
-        <ng-container *ngIf="field.isFieldChecked">
-            <label> {{field.FieldName}}:</label> {{GetFieldValue(section.SectionID, 0, field.FieldID)}}
-        </ng-container>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="section.CanBeMultiple">
-      <table class="table table-striped table-bordered">
-        <tr>
-          <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
-            <th *ngIf="field.isFieldChecked">
-              {{field.FieldName}}
-            </th>
-          </ng-container>
-        </tr>
-        <tr *ngFor="let subsection of Applicant[section.SectionID]; let subindex = index">
-          <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
-            <td *ngIf="field.isFieldChecked">
-              {{GetFieldValue(section.SectionID, subindex, field.FieldID)}}
-            </td>
-          </ng-container>
-        </tr>
-      </table>
-    </ng-container>
-    <hr>
-  </div>
-
-  <!-- <div *ngFor="let section of Form.Sections;let secindex = index">
-    <ng-container *ngIf="CheckedFieldCount(secindex) > 0">
-      <h4>{{section.SectionName}}</h4>
-      <table class="table table-striped table-bordered">
-
-        <tr>
-          <ng-container *ngFor="let field of section.Fields;let findex = index">
-            <th *ngIf="field.isFieldChecked">
-              {{field.FieldName}}
-            </th>
-          </ng-container>
-        </tr>
-
-        <tr *ngFor="let item of GetSectionCount(section.SectionID)|times; let count = index">
-          <ng-container *ngFor="let field of section.Fields;let findex = index">
-            <td *ngIf="field.isFieldChecked">
-              {{GetFieldValue(section.SectionID,count, field.FieldID)}}
-            </td>
-          </ng-container>
-        </tr>
-
-      </table>
-      <br>
-    </ng-container>
-
-  </div> -->
+<ng-container *ngIf="!isProfileLoaded; else ProfileLoaded">
+  <div id="loading" class="overlay">
+    <div class="loader_div">
+        <img src="loader.gif"/><br><br>
+        <b class="loadingtext">Loading...</b>
+    </div>
 </div>
-<button class="btn btn-primary" (click)="PrintToPdf()">Print</button>
+</ng-container>
+
+<ng-template #ProfileLoaded>
+    <h3>{{Form.FormTitle}}</h3>
+    <select (change)="OnSelectTemplate($event)">
+        <option selected disabled>Select Template</option>
+        <option *ngFor="let col of TemplateList;let j=index">{{col.TemplateTitle}}</option>
+      </select>
+      
+      <div #ApplicantProfile>
+        <div *ngFor="let section of Form.Sections;let secindex = index">
+          <h4>{{section.SectionName}}</h4>
+      
+          <!-- Sections that cannot be multiple in Non Edit Mode -->
+          <ng-container *ngIf="!section.CanBeMultiple">
+            <div *ngFor="let field of section.Fields; let fieldindex = index">
+              <ng-container *ngIf="field.isFieldChecked">
+                  <label> {{field.FieldName}}:</label> {{GetFieldValue(section.SectionID, 0, field.FieldID)}}
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="section.CanBeMultiple">
+            <table class="table table-striped table-bordered">
+              <tr>
+                <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
+                  <th *ngIf="field.isFieldChecked">
+                    {{field.FieldName}}
+                  </th>
+                </ng-container>
+              </tr>
+              <tr *ngFor="let subsection of Applicant[section.SectionID]; let subindex = index">
+                <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
+                  <td *ngIf="field.isFieldChecked">
+                    {{GetFieldValue(section.SectionID, subindex, field.FieldID)}}
+                  </td>
+                </ng-container>
+              </tr>
+            </table>
+          </ng-container>
+          <hr>
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="PrintToPdf()">Print</button>
+</ng-template>

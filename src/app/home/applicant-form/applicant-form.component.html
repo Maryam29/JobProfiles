@@ -1,468 +1,478 @@
 <!--Empty Form-->
-<div *ngIf="!isApplicationFilled">
-    <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
-        <h3>{{FormTitle}}</h3>
-        <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
-            <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
-
-            <div *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
-                <hr>
-                <div *ngFor="let field of FormLayout.Sections[currsectionindex][subindex].Fields; let fieldindex = index" [formGroupName]="subindex">
-                    <div [ngSwitch]="field.FieldType">
-                        <label>{{field.FieldName}}</label>
-
-                        <!-----------------------For Radio Button------------------>
-                        <div *ngSwitchCase="'Radio'">
-                            <div *ngFor="let option of field.options;let optionindex = index">
-                                {{option}}
-                                <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
-                            </div>
-                        </div>
-                        <!-----------------------End Radio Button------------------>
-
-                        <!-----------------------For Checkbox Button------------------>
-                        <div *ngSwitchCase="'Checkbox'">
-                            <div *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
-                                {{option}}
-                                <input class="form-control" type="checkbox" [formControlName]="optionindex">
-                            </div>
-                        </div>
-                        <!-----------------------End Checkbox Button------------------>
-
-                        <!-----------------------For Textbox Button------------------>
-                        <div *ngSwitchCase="'Textbox'" class="form-group">
-                            <input class="form-control" type="text" [formControlName]="fieldindex">
-                        </div>
-                        <!----------------------End Textbox Button------------------>
-
-                        <!-----------------------For Paragraph Button------------------>
-                        <div *ngSwitchCase="'Textarea'" class="form-group">
-                            <textarea class="form-control" [formControlName]="fieldindex"></textarea>
-                        </div>
-                        <!----------------------End Paragraph Button------------------>
-
-                        <!-----------------------For Dropbox Button------------------>
-                        <div *ngSwitchCase="'Dropdown'" class="form-group">
-                            <select class="form-control" [formControlName]="fieldindex">
-                                <option selected disabled>Choose one</option>
-                                <option *ngFor="let option of field.options;">{{option}}</option>
-                            </select>
-                        </div>
-                        <!----------------------End Dropbox Button------------------>
-
-                        <!-----------------------For Calendar Button------------------>
-                        <div *ngSwitchCase="'Calendar'" class="form-group">
-                            <input class="form-control" type="date" [formControlName]="fieldindex" />
-                        </div>
-                        <!----------------------End Calendar Button------------------>
-
-                        <!-----------------------For Countries Dropbox Button------------------>
-                        <div *ngSwitchCase="'Country'" class="form-group">
-                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                [formControlName]="fieldindex">
-                                <option selected disabled>Select Country</option>
-                                <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
-                            </select>
-                        </div>
-                        <!----------------------End CustomerType Dropbox Button------------------>
-
-                        <!-----------------------For State Dropbox Button------------------>
-                        <div *ngSwitchCase="'State'" class="form-group">
-                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                [formControlName]="fieldindex">
-                                <option selected disabled>Select State</option>
-                                <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
-                            </select>
-                            <!-- <select>
-                                    <option selected disabled>Choose one</option>
-                                    <option *ngFor="let option of field.options;">{{option}}</option>
-                                </select> -->
-                        </div>
-                        <!----------------------End State Dropbox Button------------------>
-
-                        <!-----------------------For City Dropbox Button------------------>
-                        <div *ngSwitchCase="'City'" class="form-group">
-                            <select class="form-control input-lg" [formControlName]="fieldindex">
-                                <option selected disabled>Select City</option>
-                                <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
-                            </select>
-                            <!-- <select>
-                                        <option selected disabled>Choose one</option>
-                                        <option *ngFor="let option of field.options;">{{option}}</option>
-                                    </select> -->
-                        </div>
-                        <!----------------------End City Dropbox Button------------------>
-
-                        <!-----------------------For CustomerType Dropbox Button------------------>
-                        <div *ngSwitchCase="'Type'" class="form-group">
-                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                [formControlName]="fieldindex">
-                                <option selected disabled>Select Customer Type</option>
-                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                            </select>
-
-                            <!-- <select [formControlName]="fieldindex"> 
-                        <option selected disabled>Choose one</option>
-                        <option *ngFor="let option of field.options;"value= {{country.id}}>{{country.name}}</option>
-                    </select>-->
-                        </div>
-                        <!----------------------End CustomerType Dropbox Button------------------>
-
-                        <!-----------------------For Installation Type Dropbox Button------------------>
-                        <div *ngSwitchCase="'InstallationType'" class="form-group">
-                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                [formControlName]="fieldindex">
-                                <option selected disabled>Select Installation Type</option>
-                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                            </select>
-                            <!-- <select>
-                                <option selected disabled>Choose one</option>
-                                <option *ngFor="let option of field.options;">{{option}}</option>
-                            </select> -->
-                        </div>
-                        <!----------------------End Installation Type Dropbox Button------------------>
-                        <!-----------------------For Designation Dropbox Button------------------>
-                        <div *ngSwitchCase="'Designation'" class="form-group">
-                            <select class="form-control input-lg" [formControlName]="fieldindex">
-                                <option selected disabled>Select Designation</option>
-                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                            </select>
-                        </div>
-                        <!----------------------End Designation Dropbox Button------------------>
-
-                    </div>
-                </div>
-            </div>
-            <span>
-                <a *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add Section</a>
-            </span>
-            <hr>
-        </div>
-        <button class="btn btn-primary" type="submit">Save</button>
-    </form>
-</div>
-
-<div *ngIf="isApplicationFilled">
-    <h3>{{FormTitle}}</h3>
-    <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
-        <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
-            <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
-
-            <!-- Sections that cannot be multiple in Non Edit Mode -->
-            <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && !FormLayout.Sections[currsectionindex][0].isEditMode">
-                <div *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
-                    <label>{{field.FieldName}}:</label> {{GetFieldValue(currsectionindex,0,fieldindex)}}
-                </div>
-                <span>
-                    <a (click)="EditSubSection(currsectionindex, 0)">Edit {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
-                </span>
-            </ng-container>
-
-            <!-- Sections that cannot be multiple in Edit Mode -->
-            <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && FormLayout.Sections[currsectionindex][0].isEditMode">
-                <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
-                    <ng-container *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index" [formGroupName]="subindex">
-                        <label>{{field.FieldName}}:</label> 
-                        <ng-container [ngSwitch]="field.FieldType">
-                            <!-- <label>{{field.FieldName}}</label> -->
-
-                            <!-----------------------For Radio Button------------------>
-                            <div *ngSwitchCase="'Radio'">
-                                <ng-container *ngFor="let option of field.options;let optionindex = index">
-                                    {{option}}
-                                    <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
-                                </ng-container>
-                            </div>
-
-                            <!-----------------------End Radio Button------------------>
-
-                            <!-----------------------For Checkbox Button------------------>
-                            <div *ngSwitchCase="'Checkbox'">
-                                <ng-container *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
-                                    {{option}}
-                                    <input type="checkbox" [formControlName]="optionindex">
-                                </ng-container>
-                            </div>
-
-                            <!-----------------------End Checkbox Button------------------>
-
-                            <!-----------------------For Textbox Button------------------>
-                            <div *ngSwitchCase="'Textbox'" class="form-group">
-                                <input class="form-control" type="text" [formControlName]="fieldindex">
-                            </div>
-
-                            <!----------------------End Textbox Button------------------>
-
-                            <!-----------------------For Paragraph Button------------------>
-                            <div *ngSwitchCase="'Textarea'" class="form-group">
-                                <textarea class="form-control" [formControlName]="fieldindex"></textarea>
-                            </div>
-
-                            <!----------------------End Paragraph Button------------------>
-
-                            <!-----------------------For Dropbox Button------------------>
-                            <div *ngSwitchCase="'Dropdown'" class="form-group">
-                                <select class="form-control" [formControlName]="fieldindex">
-                                    <option selected disabled>Choose one</option>
-                                    <option *ngFor="let option of field.options;">{{option}}</option>
-                                </select>
-                            </div>
-
-
-                            <!----------------------End Dropbox Button------------------>
-
-                            <!-----------------------For Calendar Button------------------>
-                            <div *ngSwitchCase="'Calendar'" class="form-group">
-                                <input class="form-control" type="date" [formControlName]="fieldindex" />
-                            </div>
-
-                            <!----------------------End Calendar Button------------------>
-
-                            <!-----------------------For Countries Dropbox Button------------------>
-                            <div *ngSwitchCase="'Country'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Country</option>
-                                    <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End CustomerType Dropbox Button------------------>
-
-                            <!-----------------------For State Dropbox Button------------------>
-                            <div *ngSwitchCase="'State'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select State</option>
-                                    <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End State Dropbox Button------------------>
-
-                            <!-----------------------For City Dropbox Button------------------>
-                            <div *ngSwitchCase="'City'" class="form-group">
-                                <select class="form-control input-lg" [formControlName]="fieldindex">
-                                    <option selected disabled>Select City</option>
-                                    <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End City Dropbox Button------------------>
-
-                            <!-----------------------For CustomerType Dropbox Button------------------>
-                            <div *ngSwitchCase="'Type'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Customer Type</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End CustomerType Dropbox Button------------------>
-
-                            <!-----------------------For Installation Type Dropbox Button------------------>
-                            <div *ngSwitchCase="'InstallationType'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Installation Type</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End Installation Type Dropbox Button------------------>
-                            <!-----------------------For Designation Dropbox Button------------------>
-                            <div *ngSwitchCase="'Designation'" class="form-group">
-                                <select class="form-control input-lg" [formControlName]="fieldindex">
-                                    <option selected disabled>Select Designation</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </div>
-
-                            <!----------------------End Designation Dropbox Button------------------>
-
-                        </ng-container>
-                    </ng-container>
-                </ng-container>
-                <a type="button" (click)="onSavesubSection(currsectionindex,0)">Done</a>
-            </ng-container>
-
-            <!-- Sections that can be multiple -->
-            <span>
-                <a class="pull-right" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
-            </span>
-            <table class="table table-bordered table-striped" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple">
-                <tr>
-                    <th *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
-                        {{field.FieldName}}
-                    </th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
-                        <!-- If Sub Section/Row is in Non Edit Mode  -->
-                <tr *ngIf="!FormLayout.Sections[currsectionindex][subindex].isEditMode">
-                    <td *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
-                        {{GetFieldValue(currsectionindex,subindex,fieldindex)}}
-                    </td>
-                    <td>
-                        <a *ngIf="FormLayout.Sections[currsectionindex].length>1" (click)="RemoveSubSection(currsectionindex,subindex)">Remove</a>
-                    </td>
-                    <td>
-                        <span>
-                            <a (click)="EditSubSection(currsectionindex, subindex)">Edit</a>
-                        </span>
-                    </td>
-                </tr>
-
-                <!-- If Sub Section/Row is in Edit Mode  -->
-
-                <tr *ngIf="FormLayout.Sections[currsectionindex][subindex].isEditMode">
-                    <ng-container *ngFor="let field of FormLayout.Sections[currsectionindex][subindex].Fields; let fieldindex = index" [formGroupName]="subindex">
-                        <ng-container [ngSwitch]="field.FieldType">
-                            <!-- <label>{{field.FieldName}}</label> -->
-
-                            <!-----------------------For Radio Button------------------>
-                            <td *ngSwitchCase="'Radio'">
-                                <ng-container *ngFor="let option of field.options;let optionindex = index">
-                                    {{option}}
-                                    <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
-                                </ng-container>
-                            </td>
-
-                            <!-----------------------End Radio Button------------------>
-
-                            <!-----------------------For Checkbox Button------------------>
-                            <td *ngSwitchCase="'Checkbox'">
-                                <ng-container *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
-                                    {{option}}
-                                    <input type="checkbox" [formControlName]="optionindex">
-                                </ng-container>
-                            </td>
-
-                            <!-----------------------End Checkbox Button------------------>
-
-                            <!-----------------------For Textbox Button------------------>
-                            <td *ngSwitchCase="'Textbox'" class="form-group">
-                                <input class="form-control" type="text" [formControlName]="fieldindex">
-                            </td>
-
-                            <!----------------------End Textbox Button------------------>
-
-                            <!-----------------------For Paragraph Button------------------>
-                            <td *ngSwitchCase="'Textarea'" class="form-group">
-                                <textarea class="form-control" [formControlName]="fieldindex"></textarea>
-                            </td>
-
-                            <!----------------------End Paragraph Button------------------>
-
-                            <!-----------------------For Dropbox Button------------------>
-                            <td *ngSwitchCase="'Dropdown'" class="form-group">
-                                <select class="form-control" [formControlName]="fieldindex">
-                                    <option selected disabled>Choose one</option>
-                                    <option *ngFor="let option of field.options;">{{option}}</option>
-                                </select>
-                            </td>
-
-
-                            <!----------------------End Dropbox Button------------------>
-
-                            <!-----------------------For Calendar Button------------------>
-                            <td *ngSwitchCase="'Calendar'" class="form-group">
-                                <input class="form-control" type="date" [formControlName]="fieldindex" />
-                            </td>
-
-                            <!----------------------End Calendar Button------------------>
-
-                            <!-----------------------For Countries Dropbox Button------------------>
-                            <td *ngSwitchCase="'Country'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Country</option>
-                                    <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End CustomerType Dropbox Button------------------>
-
-                            <!-----------------------For State Dropbox Button------------------>
-                            <td *ngSwitchCase="'State'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select State</option>
-                                    <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End State Dropbox Button------------------>
-
-                            <!-----------------------For City Dropbox Button------------------>
-                            <td *ngSwitchCase="'City'" class="form-group">
-                                <select class="form-control input-lg" [formControlName]="fieldindex">
-                                    <option selected disabled>Select City</option>
-                                    <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End City Dropbox Button------------------>
-
-                            <!-----------------------For CustomerType Dropbox Button------------------>
-                            <td *ngSwitchCase="'Type'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Customer Type</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End CustomerType Dropbox Button------------------>
-
-                            <!-----------------------For Installation Type Dropbox Button------------------>
-                            <td *ngSwitchCase="'InstallationType'" class="form-group">
-                                <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
-                                    [formControlName]="fieldindex">
-                                    <option selected disabled>Select Installation Type</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End Installation Type Dropbox Button------------------>
-                            <!-----------------------For Designation Dropbox Button------------------>
-                            <td *ngSwitchCase="'Designation'" class="form-group">
-                                <select class="form-control input-lg" [formControlName]="fieldindex">
-                                    <option selected disabled>Select Designation</option>
-                                    <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
-                                </select>
-                            </td>
-
-                            <!----------------------End Designation Dropbox Button------------------>
-
-                        </ng-container>
-                    </ng-container>
-                    <td>
-                        <a *ngIf="FormLayout.Sections[currsectionindex].length>1" (click)="RemoveSubSection(currsectionindex,subindex)">Remove</a>
-                    </td>
-                    <td>
-                        <a type="button" (click)="onSavesubSection(currsectionindex,subindex)">Done</a>
-                    </td>
-                </tr>
-
-                </ng-container>
-            </table>
+<div *ngIf="isFormLoaded">
+        <div *ngIf="!isApplicationFilled">
+                <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
+                    <h3>{{FormTitle}}</h3>
+                    <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
+                        <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
             
-            <div *ngFor="let subsection of currsection.controls; let subindex = index">
+                        <div *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
+                            <hr>
+                            <div *ngFor="let field of FormLayout.Sections[currsectionindex][subindex].Fields; let fieldindex = index" [formGroupName]="subindex">
+                                <div [ngSwitch]="field.FieldType">
+                                    <label>{{field.FieldName}}</label>
+            
+                                    <!-----------------------For Radio Button------------------>
+                                    <div *ngSwitchCase="'Radio'">
+                                        <div *ngFor="let option of field.options;let optionindex = index">
+                                            {{option}}
+                                            <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                        </div>
+                                    </div>
+                                    <!-----------------------End Radio Button------------------>
+            
+                                    <!-----------------------For Checkbox Button------------------>
+                                    <div *ngSwitchCase="'Checkbox'">
+                                        <div *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
+                                            {{option}}
+                                            <input class="form-control" type="checkbox" [formControlName]="optionindex">
+                                        </div>
+                                    </div>
+                                    <!-----------------------End Checkbox Button------------------>
+            
+                                    <!-----------------------For Textbox Button------------------>
+                                    <div *ngSwitchCase="'Textbox'" class="form-group">
+                                        <input class="form-control" type="text" [formControlName]="fieldindex">
+                                    </div>
+                                    <!----------------------End Textbox Button------------------>
+            
+                                    <!-----------------------For Paragraph Button------------------>
+                                    <div *ngSwitchCase="'Textarea'" class="form-group">
+                                        <textarea class="form-control" [formControlName]="fieldindex"></textarea>
+                                    </div>
+                                    <!----------------------End Paragraph Button------------------>
+            
+                                    <!-----------------------For Dropbox Button------------------>
+                                    <div *ngSwitchCase="'Dropdown'" class="form-group">
+                                        <select class="form-control" [formControlName]="fieldindex">
+                                            <option selected disabled>Choose one</option>
+                                            <option *ngFor="let option of field.options;">{{option}}</option>
+                                        </select>
+                                    </div>
+                                    <!----------------------End Dropbox Button------------------>
+            
+                                    <!-----------------------For Calendar Button------------------>
+                                    <div *ngSwitchCase="'Calendar'" class="form-group">
+                                        <input class="form-control" type="date" [formControlName]="fieldindex" />
+                                    </div>
+                                    <!----------------------End Calendar Button------------------>
+            
+                                    <!-----------------------For Countries Dropbox Button------------------>
+                                    <div *ngSwitchCase="'Country'" class="form-group">
+                                        <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                            [formControlName]="fieldindex">
+                                            <option selected disabled>Select Country</option>
+                                            <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
+                                        </select>
+                                    </div>
+                                    <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                    <!-----------------------For State Dropbox Button------------------>
+                                    <div *ngSwitchCase="'State'" class="form-group">
+                                        <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                            [formControlName]="fieldindex">
+                                            <option selected disabled>Select State</option>
+                                            <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
+                                        </select>
+                                        <!-- <select>
+                                                <option selected disabled>Choose one</option>
+                                                <option *ngFor="let option of field.options;">{{option}}</option>
+                                            </select> -->
+                                    </div>
+                                    <!----------------------End State Dropbox Button------------------>
+            
+                                    <!-----------------------For City Dropbox Button------------------>
+                                    <div *ngSwitchCase="'City'" class="form-group">
+                                        <select class="form-control input-lg" [formControlName]="fieldindex">
+                                            <option selected disabled>Select City</option>
+                                            <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
+                                        </select>
+                                        <!-- <select>
+                                                    <option selected disabled>Choose one</option>
+                                                    <option *ngFor="let option of field.options;">{{option}}</option>
+                                                </select> -->
+                                    </div>
+                                    <!----------------------End City Dropbox Button------------------>
+            
+                                    <!-----------------------For CustomerType Dropbox Button------------------>
+                                    <div *ngSwitchCase="'Type'" class="form-group">
+                                        <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                            [formControlName]="fieldindex">
+                                            <option selected disabled>Select Customer Type</option>
+                                            <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                        </select>
+            
+                                        <!-- <select [formControlName]="fieldindex"> 
+                                    <option selected disabled>Choose one</option>
+                                    <option *ngFor="let option of field.options;"value= {{country.id}}>{{country.name}}</option>
+                                </select>-->
+                                    </div>
+                                    <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                    <!-----------------------For Installation Type Dropbox Button------------------>
+                                    <div *ngSwitchCase="'InstallationType'" class="form-group">
+                                        <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                            [formControlName]="fieldindex">
+                                            <option selected disabled>Select Installation Type</option>
+                                            <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                        </select>
+                                        <!-- <select>
+                                            <option selected disabled>Choose one</option>
+                                            <option *ngFor="let option of field.options;">{{option}}</option>
+                                        </select> -->
+                                    </div>
+                                    <!----------------------End Installation Type Dropbox Button------------------>
+                                    <!-----------------------For Designation Dropbox Button------------------>
+                                    <div *ngSwitchCase="'Designation'" class="form-group">
+                                        <select class="form-control input-lg" [formControlName]="fieldindex">
+                                            <option selected disabled>Select Designation</option>
+                                            <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                        </select>
+                                    </div>
+                                    <!----------------------End Designation Dropbox Button------------------>
+            
+                                </div>
+                            </div>
+                        </div>
+                        <span>
+                            <a *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add Section</a>
+                        </span>
+                        <hr>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </form>
             </div>
-
+            
+            <div *ngIf="isApplicationFilled">
+                <h3>{{FormTitle}}</h3>
+                <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
+                    <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
+                        <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
+            
+                        <!-- Sections that cannot be multiple in Non Edit Mode -->
+                        <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && !FormLayout.Sections[currsectionindex][0].isEditMode">
+                            <div *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
+                                <label>{{field.FieldName}}:</label> {{GetFieldValue(currsectionindex,0,fieldindex)}}
+                            </div>
+                            <span>
+                                <a (click)="EditSubSection(currsectionindex, 0)">Edit {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
+                            </span>
+                        </ng-container>
+            
+                        <!-- Sections that cannot be multiple in Edit Mode -->
+                        <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && FormLayout.Sections[currsectionindex][0].isEditMode">
+                            <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
+                                <ng-container *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index" [formGroupName]="subindex">
+                                    <label>{{field.FieldName}}:</label> 
+                                    <ng-container [ngSwitch]="field.FieldType">
+                                        <!-- <label>{{field.FieldName}}</label> -->
+            
+                                        <!-----------------------For Radio Button------------------>
+                                        <div *ngSwitchCase="'Radio'">
+                                            <ng-container *ngFor="let option of field.options;let optionindex = index">
+                                                {{option}}
+                                                <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                            </ng-container>
+                                        </div>
+            
+                                        <!-----------------------End Radio Button------------------>
+            
+                                        <!-----------------------For Checkbox Button------------------>
+                                        <div *ngSwitchCase="'Checkbox'">
+                                            <ng-container *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
+                                                {{option}}
+                                                <input type="checkbox" [formControlName]="optionindex">
+                                            </ng-container>
+                                        </div>
+            
+                                        <!-----------------------End Checkbox Button------------------>
+            
+                                        <!-----------------------For Textbox Button------------------>
+                                        <div *ngSwitchCase="'Textbox'" class="form-group">
+                                            <input class="form-control" type="text" [formControlName]="fieldindex">
+                                        </div>
+            
+                                        <!----------------------End Textbox Button------------------>
+            
+                                        <!-----------------------For Paragraph Button------------------>
+                                        <div *ngSwitchCase="'Textarea'" class="form-group">
+                                            <textarea class="form-control" [formControlName]="fieldindex"></textarea>
+                                        </div>
+            
+                                        <!----------------------End Paragraph Button------------------>
+            
+                                        <!-----------------------For Dropbox Button------------------>
+                                        <div *ngSwitchCase="'Dropdown'" class="form-group">
+                                            <select class="form-control" [formControlName]="fieldindex">
+                                                <option selected disabled>Choose one</option>
+                                                <option *ngFor="let option of field.options;">{{option}}</option>
+                                            </select>
+                                        </div>
+            
+            
+                                        <!----------------------End Dropbox Button------------------>
+            
+                                        <!-----------------------For Calendar Button------------------>
+                                        <div *ngSwitchCase="'Calendar'" class="form-group">
+                                            <input class="form-control" type="date" [formControlName]="fieldindex" />
+                                        </div>
+            
+                                        <!----------------------End Calendar Button------------------>
+            
+                                        <!-----------------------For Countries Dropbox Button------------------>
+                                        <div *ngSwitchCase="'Country'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Country</option>
+                                                <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                        <!-----------------------For State Dropbox Button------------------>
+                                        <div *ngSwitchCase="'State'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select State</option>
+                                                <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End State Dropbox Button------------------>
+            
+                                        <!-----------------------For City Dropbox Button------------------>
+                                        <div *ngSwitchCase="'City'" class="form-group">
+                                            <select class="form-control input-lg" [formControlName]="fieldindex">
+                                                <option selected disabled>Select City</option>
+                                                <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End City Dropbox Button------------------>
+            
+                                        <!-----------------------For CustomerType Dropbox Button------------------>
+                                        <div *ngSwitchCase="'Type'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Customer Type</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                        <!-----------------------For Installation Type Dropbox Button------------------>
+                                        <div *ngSwitchCase="'InstallationType'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Installation Type</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End Installation Type Dropbox Button------------------>
+                                        <!-----------------------For Designation Dropbox Button------------------>
+                                        <div *ngSwitchCase="'Designation'" class="form-group">
+                                            <select class="form-control input-lg" [formControlName]="fieldindex">
+                                                <option selected disabled>Select Designation</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </div>
+            
+                                        <!----------------------End Designation Dropbox Button------------------>
+            
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                            <a type="button" (click)="onSavesubSection(currsectionindex,0)">Done</a>
+                        </ng-container>
+            
+                        <!-- Sections that can be multiple -->
+                        <span>
+                            <a class="pull-right" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
+                        </span>
+                        <table class="table table-bordered table-striped" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple">
+                            <tr>
+                                <th *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
+                                    {{field.FieldName}}
+                                </th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
+                                    <!-- If Sub Section/Row is in Non Edit Mode  -->
+                            <tr *ngIf="!FormLayout.Sections[currsectionindex][subindex].isEditMode">
+                                <td *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
+                                    {{GetFieldValue(currsectionindex,subindex,fieldindex)}}
+                                </td>
+                                <td>
+                                    <a *ngIf="FormLayout.Sections[currsectionindex].length>1" (click)="RemoveSubSection(currsectionindex,subindex)">Remove</a>
+                                </td>
+                                <td>
+                                    <span>
+                                        <a (click)="EditSubSection(currsectionindex, subindex)">Edit</a>
+                                    </span>
+                                </td>
+                            </tr>
+            
+                            <!-- If Sub Section/Row is in Edit Mode  -->
+            
+                            <tr *ngIf="FormLayout.Sections[currsectionindex][subindex].isEditMode">
+                                <ng-container *ngFor="let field of FormLayout.Sections[currsectionindex][subindex].Fields; let fieldindex = index" [formGroupName]="subindex">
+                                    <ng-container [ngSwitch]="field.FieldType">
+                                        <!-- <label>{{field.FieldName}}</label> -->
+            
+                                        <!-----------------------For Radio Button------------------>
+                                        <td *ngSwitchCase="'Radio'">
+                                            <ng-container *ngFor="let option of field.options;let optionindex = index">
+                                                {{option}}
+                                                <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                            </ng-container>
+                                        </td>
+            
+                                        <!-----------------------End Radio Button------------------>
+            
+                                        <!-----------------------For Checkbox Button------------------>
+                                        <td *ngSwitchCase="'Checkbox'">
+                                            <ng-container *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
+                                                {{option}}
+                                                <input type="checkbox" [formControlName]="optionindex">
+                                            </ng-container>
+                                        </td>
+            
+                                        <!-----------------------End Checkbox Button------------------>
+            
+                                        <!-----------------------For Textbox Button------------------>
+                                        <td *ngSwitchCase="'Textbox'" class="form-group">
+                                            <input class="form-control" type="text" [formControlName]="fieldindex">
+                                        </td>
+            
+                                        <!----------------------End Textbox Button------------------>
+            
+                                        <!-----------------------For Paragraph Button------------------>
+                                        <td *ngSwitchCase="'Textarea'" class="form-group">
+                                            <textarea class="form-control" [formControlName]="fieldindex"></textarea>
+                                        </td>
+            
+                                        <!----------------------End Paragraph Button------------------>
+            
+                                        <!-----------------------For Dropbox Button------------------>
+                                        <td *ngSwitchCase="'Dropdown'" class="form-group">
+                                            <select class="form-control" [formControlName]="fieldindex">
+                                                <option selected disabled>Choose one</option>
+                                                <option *ngFor="let option of field.options;">{{option}}</option>
+                                            </select>
+                                        </td>
+            
+            
+                                        <!----------------------End Dropbox Button------------------>
+            
+                                        <!-----------------------For Calendar Button------------------>
+                                        <td *ngSwitchCase="'Calendar'" class="form-group">
+                                            <input class="form-control" type="date" [formControlName]="fieldindex" />
+                                        </td>
+            
+                                        <!----------------------End Calendar Button------------------>
+            
+                                        <!-----------------------For Countries Dropbox Button------------------>
+                                        <td *ngSwitchCase="'Country'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Country</option>
+                                                <option *ngFor="let option of field.options" value={{option.CountryName}}>{{option.CountryName}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                        <!-----------------------For State Dropbox Button------------------>
+                                        <td *ngSwitchCase="'State'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select State</option>
+                                                <option *ngFor="let option of field.options" value={{option.StateName}}>{{option.StateName}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End State Dropbox Button------------------>
+            
+                                        <!-----------------------For City Dropbox Button------------------>
+                                        <td *ngSwitchCase="'City'" class="form-group">
+                                            <select class="form-control input-lg" [formControlName]="fieldindex">
+                                                <option selected disabled>Select City</option>
+                                                <option *ngFor="let option of field.options" value={{option}}>{{option}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End City Dropbox Button------------------>
+            
+                                        <!-----------------------For CustomerType Dropbox Button------------------>
+                                        <td *ngSwitchCase="'Type'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Customer Type</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End CustomerType Dropbox Button------------------>
+            
+                                        <!-----------------------For Installation Type Dropbox Button------------------>
+                                        <td *ngSwitchCase="'InstallationType'" class="form-group">
+                                            <select (change)="onSelectParent(currsectionindex, subindex, fieldindex, $event.target.value)" class="form-control input-lg"
+                                                [formControlName]="fieldindex">
+                                                <option selected disabled>Select Installation Type</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End Installation Type Dropbox Button------------------>
+                                        <!-----------------------For Designation Dropbox Button------------------>
+                                        <td *ngSwitchCase="'Designation'" class="form-group">
+                                            <select class="form-control input-lg" [formControlName]="fieldindex">
+                                                <option selected disabled>Select Designation</option>
+                                                <option *ngFor="let option of field.options" value={{option.name}}>{{option.name}}</option>
+                                            </select>
+                                        </td>
+            
+                                        <!----------------------End Designation Dropbox Button------------------>
+            
+                                    </ng-container>
+                                </ng-container>
+                                <td>
+                                    <a *ngIf="FormLayout.Sections[currsectionindex].length>1" (click)="RemoveSubSection(currsectionindex,subindex)">Remove</a>
+                                </td>
+                                <td>
+                                    <a type="button" (click)="onSavesubSection(currsectionindex,subindex)">Done</a>
+                                </td>
+                            </tr>
+            
+                            </ng-container>
+                        </table>
+                        
+                        <div *ngFor="let subsection of currsection.controls; let subindex = index">
+                        </div>
+            
+                    </div>
+                    <button class="btn btn-primary" type="submit" [disabled]="isFormSaved != 2">Save Changes</button>
+                </form>
+                <div class="panel panel-danger" style="margin:10px" *ngIf="isFormSaved == -1">
+                    <div class="panel-body">Details couldn\'t be saved.</div>
+                </div>
+            
+                <div class="panel panel-success" style="margin:10px" *ngIf="isFormSaved == 1">
+                    <div class="panel-body">Details saved Sucessfully.</div>
+                </div>
+            </div>
+            
+            <!-- Profile Already Filled-->
+</div>
+<div *ngIf="!isFormLoaded">
+    <div id="loading" class="overlay">
+        <div class="loader_div">
+            <img src="loader.gif"/><br><br>
+            <b class="loadingtext">Loading...</b>
         </div>
-        <button class="btn btn-primary" type="submit" [disabled]="isFormSaved != 2">Save Changes</button>
-    </form>
-    <div class="panel panel-danger" style="margin:10px" *ngIf="isFormSaved == -1">
-        <div class="panel-body">Details couldn\'t be saved.</div>
-    </div>
-
-    <div class="panel panel-success" style="margin:10px" *ngIf="isFormSaved == 1">
-        <div class="panel-body">Details saved Sucessfully.</div>
     </div>
 </div>
-
-<!-- Profile Already Filled-->

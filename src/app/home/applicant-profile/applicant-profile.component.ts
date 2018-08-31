@@ -14,6 +14,7 @@ export class ApplicantProfileComponent implements OnInit {
   Applicant;
   Form: FormModel;
   TemplateList: any[];
+  isProfileLoaded = false;
   @ViewChild('ApplicantProfile') ApplicantProfile: ElementRef;
   constructor(private route: ActivatedRoute, private router: Router, private customFormService: CustomFormService) { }
 
@@ -47,6 +48,7 @@ export class ApplicantProfileComponent implements OnInit {
         currsec.Fields[findex].isFieldChecked = true;
       }
     }
+    this.isProfileLoaded = true;
   }
 
   GetFieldValue(SectionID, index, FieldID) {
