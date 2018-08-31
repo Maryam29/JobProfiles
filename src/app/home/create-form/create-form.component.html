@@ -51,7 +51,7 @@
           <!-----------------------End Checkbox Button------------------>
     
           <!-----------------------For Dropbox Button------------------>
-          <div *ngSwitchCase="'Dropdown'" class="dropdown">
+          <div *ngSwitchCase="'Dropdown'" class="dropdown form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
             <ul>
               <li *ngFor="let option of item.options; let optionindex = index">
@@ -87,22 +87,17 @@
             <!----------------------End Calendar Button------------------>
 
           <!-----------------------For Country List------------------>
-          <div *ngSwitchCase="'Country'">
+          <div *ngSwitchCase="'Country'" class="form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
             <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
             <br>
-            *Take options from {{item.Table}} Library.
+            <small><em>*Take options from {{item.Table}} Library.</em></small>
           </div>
           <!----------------------End Country List------------------>
 
           <!-----------------------For State List------------------>
-          <div *ngSwitchCase="'State'">
+          <div *ngSwitchCase="'State'" class="form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
-            <!-- <ul>
-              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
-                {{x.FieldName}}
-              </li>
-            </ul> -->
             <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
               <option selected disabled>Choose one</option>
             <option *ngFor="let x of item.ParentField.FieldList;" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
@@ -112,13 +107,8 @@
           <!----------------------End State List------------------>
 
           <!-----------------------For city List------------------>
-          <div *ngSwitchCase="'City'">
+          <div *ngSwitchCase="'City'" class="form-group">
               <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
-              <!-- <ul>
-                <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
-                  {{x.FieldName}}
-                </li>
-              </ul> -->
               <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
                 <option selected disabled>Choose one</option>
               <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
@@ -128,21 +118,17 @@
             <!----------------------End city List------------------>
 
            <!-----------------------For CompanyType List------------------>
-           <div *ngSwitchCase="'Type'">
+           <div *ngSwitchCase="'Type'" class="form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
             <a (click)="RemoveField(sectionindex,fieldindex)">Remove Field</a>
-            <br>*Take options from {{item.Table}} Library.
+            <br>
+            <small><em>*Take options from {{item.Table}} Library.</em></small>
           </div>
           <!----------------------End CompanyType List------------------>
 
           <!-----------------------For Installation Type List------------------>
-          <div *ngSwitchCase="'InstallationType'">
+          <div *ngSwitchCase="'InstallationType'" class="form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
-            <!-- <ul>
-              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
-                {{x.FieldName}}
-              </li>
-            </ul> -->
             <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
               <option selected disabled>Choose one</option>
             <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
@@ -152,13 +138,8 @@
           <!----------------------End Installation Type List------------------>
 
           <!-----------------------For Designation List------------------>
-          <div *ngSwitchCase="'Designation'">
+          <div *ngSwitchCase="'Designation'" class="form-group">
             <input [(ngModel)]="item.FieldName" [ngModelOptions]="{standalone: true}" />
-            <!-- <ul>
-              <li *ngFor="let x of item.ParentField.FieldList ;let k=index;">
-                {{x.FieldName}}
-              </li>
-            </ul> -->
             <select (change)="AddParentField(sectionindex,fieldindex,$event.target.value)">
               <option selected disabled>Choose one</option>
             <option *ngFor="let x of item.ParentField.FieldList" [value]="x|json">{{GetFieldName(x.SectionID,x.FieldID)}}</option>
