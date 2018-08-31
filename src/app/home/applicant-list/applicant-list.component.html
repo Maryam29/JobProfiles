@@ -2,7 +2,7 @@
   <h3>
     Applicant List
   </h3>
-  <div class="col-md-2">
+  <div class="col-md-12">
     <ul>
       <li *ngFor="let item of ApplicantsDetails;let j=index">
         <a (click)="OnSelectApplicantType(j)">{{item.type}}</a>
@@ -10,7 +10,7 @@
     </ul>
   </div>
 
-  <div class="col-md-10" *ngIf="SelectedType.count_applicants > 0"><!---->
+  <div class="col-md-12" *ngIf="SelectedType.count_applicants > 0"><!---->
     <!-- <select [(ngModel)]="FilterType">
       <option selected disabled>Choose one</option>
       <option *ngFor="let col of SelectedType.fields">{{col.FieldName}}</option>

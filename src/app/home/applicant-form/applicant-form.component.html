@@ -162,6 +162,7 @@
             <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && FormLayout.Sections[currsectionindex][0].isEditMode">
                 <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
                     <ng-container *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index" [formGroupName]="subindex">
+                        <label>{{field.FieldName}}:</label> 
                         <ng-container [ngSwitch]="field.FieldType">
                             <!-- <label>{{field.FieldName}}</label> -->
 
