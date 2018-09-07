@@ -141,7 +141,7 @@ export class ApplicantListComponent implements OnInit {
   }
 
   ExportSelectedProfiles() {
-    console.log('Export to pdf');
+    // console.log('Export to pdf');
     this.ApplicantProfiles.forEach((profile, index) => {
       if (this.isApplicantChecked[index]) {
 
@@ -157,7 +157,7 @@ export class ApplicantListComponent implements OnInit {
           'width': 190,
           'elementHandlers': specialElementHandlers
         });
-        const filename = 'Applicant' + this.SelectedType.applicants[index]['Name'] + '.pdf';
+        const filename = 'Applicant' + this.SelectedType.applicants[index]['applicantID'] + '.pdf';
         doc.save(filename);
       }
     });
