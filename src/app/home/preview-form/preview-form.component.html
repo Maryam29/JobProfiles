@@ -1,4 +1,4 @@
-    <h3>{{SelectedForm.FormTitle}}</h3>
+    <h3 style="margin-bottom: 30px">{{SelectedForm.FormTitle}}</h3>
     <div *ngFor="let section of SelectedForm.Sections;">
        <h4>{{section.SectionName}}</h4> 
             <div *ngFor="let item of section.Fields;">
@@ -11,35 +11,35 @@
                          <div *ngFor="let option of item.options; let j = index" >
                              <!-- <label class="radio-inline">{{option}}</label> -->
                              {{option}}
-                             <input type="radio" [value]="option">
+                             <input class=""  type="radio" [value]="option">
                             </div>
                        </div>
                        <!-----------------------End Radio Button------------------>
                  
                        <!-----------------------For Checkbox Button------------------>
-                       <div *ngSwitchCase="'Checkbox'" class="form-group">
+                       <div *ngSwitchCase="'Checkbox'" class="">
                            <div *ngFor="let option of item.options; let j = index">
                              {{option}}
-                               <input type="checkbox">
+                               <input  class="" type="checkbox">
                            </div>
                        </div>
                        <!-----------------------End Checkbox Button------------------>
                  
                        <!-----------------------For Textbox Button------------------>
                        <div *ngSwitchCase="'Textbox'" class="form-group">
-                           <input type="text"/>
+                           <input class="form-control" type="text"/>
                        </div>
                        <!----------------------End Textbox Button------------------>
                  
                        <!-----------------------For Paragraph Button------------------>
                        <div *ngSwitchCase="'Textarea'" class="form-group">
-                           <textarea></textarea>
+                           <textarea  class="form-control" ></textarea>
                        </div>
                        <!----------------------End Paragraph Button------------------>
                  
                        <!-----------------------For Dropbox Button------------------>
                        <div *ngSwitchCase="'Dropdown'" class="form-group">
-                           <select>
+                           <select  class="form-control" >
                                <option selected disabled>Choose one</option>
                              <option *ngFor="let option of item.options;let j=index">{{option}}</option>
                            </select>
@@ -48,13 +48,13 @@
 
                         <!-----------------------For Calendar Button------------------>
                        <div *ngSwitchCase="'Calendar'" class="form-group">
-                            <input type="date"/>
+                            <input  class="form-control"  type="date"/>
                         </div>
                          <!----------------------End Calendar Button------------------>
 
                          <!-----------------------For Country Dropbox Button------------------>
                        <div *ngSwitchCase="'Country'" class="form-group">
-                        <select>
+                        <select  class="form-control" >
                             <option selected disabled>Choose one</option>
                             Countries
                           <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
@@ -64,7 +64,7 @@
 
                      <!-----------------------For State Dropbox Button------------------>
                      <div *ngSwitchCase="'State'" class="form-group">
-                            <select>
+                            <select class="form-control" >
                                 <option selected disabled>Choose one</option>
                                 States in selected country
                               <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
@@ -74,7 +74,7 @@
 
                          <!-----------------------For City Dropbox Button------------------>
                      <div *ngSwitchCase="'City'" class="form-group">
-                            <select>
+                            <select class="form-control" >
                                 <option selected disabled>Choose one</option>
                                 City in selected country
                               <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
@@ -84,7 +84,7 @@
 
                          <!-----------------------For CustomerType Dropbox Button------------------>
                        <div *ngSwitchCase="'Type'" class="form-group">
-                            <select>
+                            <select class="form-control" >
                                 <option selected disabled>Choose one</option>
                             Customer Type
                               <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
@@ -94,7 +94,7 @@
     
                          <!-----------------------For Installation Type Dropbox Button------------------>
                          <div *ngSwitchCase="'InstallationType'" class="form-group">
-                                <select>
+                                <select class="form-control" >
                                     <option selected disabled>Choose one</option>
                                     Installation Types in the selected Customer Type
                                   <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->
@@ -103,7 +103,7 @@
                              <!----------------------End Installation Type Dropbox Button------------------>
                               <!-----------------------For Designation Dropbox Button------------------>
                          <div *ngSwitchCase="'Designation'" class="form-group">
-                                <select>
+                                <select class="form-control" >
                                     <option selected disabled>Choose one</option>
                                     Designation in the selected Installation Type
                                   <!-- <option *ngFor="let option of item.options;let j=index">{{option}}</option> -->

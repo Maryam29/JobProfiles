@@ -1,4 +1,10 @@
-<div class="row">
+<style>
+.table-bordered.table-condensed.table-striped tr td:nth-child(6),.table-bordered.table-condensed.table-striped tr th:nth-child(6)  {
+    display: none;
+}
+</style>
+
+
   <ng-container *ngIf="!isApplicantDetailsLoaded; else DetailsLoaded">
     <div id="loading" class="overlay">
       <div class="loader_div">
@@ -8,45 +14,61 @@
   </div>
   </ng-container>
   <ng-template #DetailsLoaded>
-    <div class="col-md-12" *ngIf="ApplicantsDetails.length>0">
-      <h3>
+    <div class="row">
+    <div class="col-md-1" *ngIf="ApplicantsDetails.length>0">
+      <nav style="background:  #0067ad;
+        width: 224px;
+        left: 0;
+        position: fixed;
+        height: -webkit-fill-available;
+        padding-left: 25px;color:#fff;">
+      <h3 style="margin-bottom: 25px;font-weight:600">
         Applicant List
       </h3>
       <em>Select Form Type</em>
       <ul>
         <li *ngFor="let item of ApplicantsDetails;let j=index">
-          <a (click)="OnSelectApplicantType(j)">{{item.type}}</a>
+          <a (click)="OnSelectApplicantType(j)" style="color: #fff;">{{item.type}}</a>
         </li>
       </ul>
+    </nav>
     </div>
 
-    <div class="col-md-12" *ngIf="SelectedType.count_applicants > 0">
+    <div class="col-md-11" *ngIf="SelectedType.count_applicants > 0">
+      <h3>Applicant list</h3>
       <!---->
       <!-- <select [(ngModel)]="FilterType">
             <option selected disabled>Choose one</option>
             <option *ngFor="let col of SelectedType.fields">{{col.FieldName}}</option>
           </select> -->
-      <div class="form-group">
+    <div class="row" style="margin-top: 30px">
+      <div class="col-md-12 form-group">
         <input type="text" [(ngModel)]="FilterText">
         <button class="btn btn-primary" (click)="OnSearch()">Search</button>
         <button class="btn btn-default" (click)="OnClearSearch()">Clear Search</button>
       </div>
-
-      
+ 
+      <div class="col-md-12" style="overflow: scroll;margin-top: 30px">
+      <!-- <button class="btn btn-success" (click)="ExportSelectedProfiles()">Export to pdf</button> -->
       <!---When Filter Text is not empty show filtered results-->
-      <table class="table table-striped table-bordered">
+      <table class="table-bordered table-condensed table-striped" style="width:100%">
         <tr>
-          <th></th>
-          <th *ngFor="let col of SelectedType.fields">
+         
+          <th *ngFor="let col of SelectedType.fields" style="font-weight: 600">
             {{col.FieldName}}
           </th>
           <th></th>
         </tr>
         <ng-container *ngFor="let applicant of SelectedType.applicants;let j=index">
           <tr *ngIf="isApplicantFiltered[j]">
-            <input type="checkbox" [checked]="isApplicantChecked[j]" (change)="ToggleApplicantSelection(j)">
-            <td *ngFor="let col of SelectedType.fields">
-              {{applicant[col.FieldName]}}
+           
+            <td *ngFor="let col of SelectedType.fields;let k=index" style="min-width: 100px">
+                <span *ngIf="k==0">              
+                    <a [routerLink]="['../ViewProfile',applicant.applicantID]"> {{applicant[col.FieldName]}}</a>
+                  </span>
+                  <span *ngIf="k!=0">              
+                       {{applicant[col.FieldName]}}
+                    </span>
             </td>
             <td>
               <a [routerLink]="['../ViewProfile',applicant.applicantID]">View Profile</a>
@@ -69,8 +91,9 @@
           </div>
         </ng-container>
       </table>
-      <br>
-      <button class="btn btn-success" (click)="ExportSelectedProfiles()">Export to pdf</button>
     </div>
+  </div>
+      
+    </div>
+  </div>
   </ng-template>
-</div>

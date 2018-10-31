@@ -6,13 +6,24 @@ import { FormControl, FormGroup, Validators, FormArray, FormBuilder } from '@ang
 import { concat } from 'rxjs/operator/concat';
 import { SectionModel } from '../Section.model';
 import { FormModel } from '../form.model';
+import { FileSelectDirective, FileUploader} from 'ng2-file-upload';
+
+// const URL = 'http://akdesign.in/dev/apiurl/filereciever.php';
+const URL = 'http://localhost:3000/file';
 
 @Component({
     selector: 'app-applicant-form',
     templateUrl: './applicant-form.component.html',
     styleUrls: ['./applicant-form.component.css']
 })
+
 export class ApplicantFormComponent implements OnInit {
+    uploader: FileUploader = new FileUploader({
+    url: URL,
+    isHTML5: true
+  });
+    public hasBaseDropZoneOver = false;
+    public hasAnotherDropZoneOver = false;
     type: string;
     isApplicationFilled: boolean;
     fieldcount: number;
@@ -42,6 +53,13 @@ export class ApplicantFormComponent implements OnInit {
         });
         this.GetApplicantProfile();
         this.GetAllList();
+    }
+    public fileOverBase(e:any):void {
+        this.hasBaseDropZoneOver = e;
+    }
+     
+    public fileOverAnother(e:any):void {
+       this.hasAnotherDropZoneOver = e;
     }
 
     GetApplicantProfile() {

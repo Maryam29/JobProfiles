@@ -1,7 +1,20 @@
+<style>
+ul{margin-right: 4%;}
+ul li a{color: #fff;}
+ul li a:visited{background: #0067ad;color: #fff}
+
+
+</style>
+
 <div id="wrapper">
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-        <div class="navbar-header">
-        </div>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;background-color: #01aef0;border: none">
+         <img src="https://www.ocs.services//images/Oilfield_Consolidated_Services.jpg" style="border-left: 11px solid #fff;
+           border-right: 18px solid #fff;
+           border-top: 3px solid #fff;
+           border-bottom: 3px solid #fff;
+           height: 38px;
+           margin-top: 6px;
+           margin-left: 25px;"> 
         <ul class="nav navbar-nav navbar-right">
             <!-- <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                     <a [routerLink]="['createform']">Create Form</a>
@@ -12,9 +25,9 @@
             <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                 <a [routerLink]="['applicants']">Applicants</a>
             </li>
-            <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
+            <!-- <li routerLinkActive="active" *ngIf="UserType == 'Admin'">
                 <a [routerLink]="['templates']">Templates</a>
-            </li>
+            </li> -->
             <li routerLinkActive="active" *ngIf="UserType != 'Admin'">
                 <a [routerLink]="['profile']">Profile</a>
             </li>
@@ -23,7 +36,7 @@
             </li>
         </ul>
     </nav>
-    <div id="page-wrapper" style="margin:100px">
+    <div id="page-wrapper" style="margin-left:  100px">
         <router-outlet></router-outlet>
     </div>
 </div>

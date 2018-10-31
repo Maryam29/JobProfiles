@@ -7,6 +7,7 @@ var moment = require('moment');
 
 // pass passport for configuration
 const express = require('express');
+var multer = require('multer');
 const session = require('express-session');
 var dateFormat = require('dateformat');
 const http = require('http');
@@ -21,6 +22,7 @@ const nexmo = new Nexmo({
   apiSecret: 'hpURcQUhLd3uVo3A'
 });
 const app = express();
+
 //require('./server/passportconfig.js')(passport);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,7 +40,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        maxAge: 30 * 60 * 1000 // use expires instead of maxAge
+        maxAge: 30000 * 60 * 1000 // use expires instead of maxAge
     },
     rolling: true
 }));
@@ -756,6 +758,34 @@ app.post('/UpdateApplicantProfile', (req, res) => {
     }
 });
 
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'POST');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+  });
+
+app.post('/file', (req, res) => {
+    var store = multer.diskStorage({
+        destination:function(req,file,cb){
+            cb(null, './uploads');
+        },
+        filename:function(req,file,cb){
+            cb(null, Date.now()+'.'+file.originalname);
+        }
+    });
+var upload = multer({storage:store}).single('file');
+
+    upload(req,res,function(err){
+        if(err){
+            return res.status(501).json({error:err});
+        }
+        //do all database record saving activity
+        return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
+    });
+//res.send('succeskhkhks');
+});
 app.post('/getApplicantProfile', (req, res) => {
     id = req.body._id;
     try{
@@ -779,10 +809,10 @@ app.post('/getApplicantProfile', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    console.log("Inside *")
+    //console.log("Inside *")
     res.sendFile(path.join(__dirname, 'public/index.html'));
 });
-const port = process.env.PORT || '3000';
+const port = process.env.PORT || '3000' || '4200';
 app.set('port', port);
 
 const server = http.createServer(app);

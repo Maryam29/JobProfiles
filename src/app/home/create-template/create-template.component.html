@@ -1,14 +1,16 @@
 <ng-container *ngIf="(TemplatesLoaded && FormLoaded); else Loading">
-    <div class="col-md-2">
+    <div class="col-md-1">
+      <nav class="side-nav-custom">
         <ul>
           <li *ngFor="let item of TemplatesList;let j=index">
-            <a (click)="OnEditTemplate(j)">{{item.TemplateTitle}}</a>
+            <a (click)="OnEditTemplate(j)" style="color: #fff">{{item.TemplateTitle}}</a>
           </li>
         </ul>
-        <a (click)="OnCreateTemplate()">+ New Template</a>
+        <a (click)="OnCreateTemplate()" style="color: #fff">+ New Template</a>
+      </nav>
       </div>
       <ng-container *ngIf="createMode">
-          <div class="col-md-6">
+          <div class="col-md-6" style="margin-top: 20px">
               <select id="type" name="type" [(ngModel)]="SelectedForm.FormType" (change)="OnSelectForm($event)">
                 <option selected disabled>Select Form</option>
                 <option *ngFor="let option of FormsList;let j=index">
@@ -40,7 +42,7 @@
               </div>
             </div>
             
-            <div class="col-md-4">
+            <div class="col-md-4" style="background-color: #f0f0f0">
               <h3>{{TemplateTitle}}</h3>
               <div *ngFor="let section of SelectedForm.Sections;let secindex= index">
                 <ng-container *ngIf="CheckedFieldCount(secindex) > 0">

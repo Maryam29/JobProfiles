@@ -22,6 +22,7 @@ import { ViewFormsComponent } from './home/view-forms/view-forms.component';
 import { ApplicantListComponent } from './home/applicant-list/applicant-list.component';
 import { PreviewFormComponent } from './home/preview-form/preview-form.component';
 import { ApplicantProfileComponent } from './home/applicant-profile/applicant-profile.component';
+import {FileUploadModule} from 'ng2-file-upload';
 
 import { KeysPipe } from './home/Keys.pipe';
 import { TimesPipe } from './home/Times.pipe';
@@ -62,6 +63,7 @@ const appRoutes: Routes = [
     HttpModule,
     ReactiveFormsModule,
     FilterPipeModule,
+    FileUploadModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [AuthService, AuthGuard, CustomFormService, CustomListService],

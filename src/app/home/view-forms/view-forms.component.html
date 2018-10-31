@@ -7,22 +7,36 @@
         </div>
     </div>
 </ng-container>
-<ng-template #FormLoaded>
-    <div class="row">
-        <div class="col-xs-2">
-          <h4>List of Forms</h4>
-          <ul>
-            <li *ngFor="let option of FormsList; let j=index"><a (click) ="OnSelectForm(j)">{{option.FormTitle}}</a></li>
-          </ul>
-          <a (click)="CreateNewForm()">+ New Form</a>
+
+ <ng-template #FormLoaded>
+  <div class="row">
+    <div class="col-md-1">
+      <nav class="side-nav-custom">
+
+        <div class="row">
+            <div class="">
+              <h4 style="color: #fff;margin-bottom: 25px;font-weight:600">List of Forms</h4>
+              <ul>
+                <li *ngFor="let option of FormsList; let j=index"><a (click) ="OnSelectForm(j)" style="color: #fff">{{option.FormTitle}}</a></li>
+              </ul>
+              <a (click)="CreateNewForm()" style="color: #fff">+ New Form</a>
+            </div>
+        
+            
         </div>
-    
-        <div class="col-xs-6" *ngIf="isSelected" >
+      </nav>
+    </div>
+    <div class="col-md-11">
+      <div class="row">
+
+        <div class="col-md-6" *ngIf="isSelected" style="padding: 0 5%;background-color: #eaeaea;overflow: scroll;height: 100vh">
           <app-create-form [SelectedForm]="SelectedForm"  (FormSaved)="OnSaveForm($event)"></app-create-form>
         </div>
         
-        <div class="col-xs-4" *ngIf="isSelected" >
+        <div class="col-md-6" *ngIf="isSelected" style="background-color: #f4f4f4;padding: 0 5%;overflow: scroll;height: 100vh">
           <app-preview-form [SelectedForm]="SelectedForm"></app-preview-form>
         </div>
+      </div>
     </div>
+  </div>
 </ng-template>

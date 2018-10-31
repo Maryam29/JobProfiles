@@ -1,8 +1,57 @@
 <!--Empty Form-->
+<input type="file" ng2FileSelect [uploader]="uploader" name="fileToUpload" />
+<div class="col-md-9" style="margin-bottom: 40px">
+ 
+            <h3>Upload queue</h3>
+            <p>Queue length: {{ uploader?.queue?.length }}</p>
+ 
+            <table class="table">
+                <thead>
+                <tr>
+                    <th width="50%">Name</th>
+                    <th>Size</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of uploader.queue">
+                    <td><strong>{{ item?.file?.name }}</strong></td>
+                    <td *ngIf="uploader.isHTML5" nowrap><!-- {{ item?.file?.size/1024/1024 | number:'.2' }} MB --></td>
+                    <td >
+                        <div class="progress" style="margin-bottom: 0;">
+                            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                        <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                        <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                    </td>
+                    <td nowrap>
+                        <button type="button" class="btn btn-success btn-xs"
+                                (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
+                            <span class="glyphicon glyphicon-upload"></span> Upload
+                        </button>
+                        <button type="button" class="btn btn-warning btn-xs"
+                                (click)="item.cancel()" [disabled]="!item.isUploading">
+                            <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger btn-xs"
+                                (click)="item.remove()">
+                            <span class="glyphicon glyphicon-trash"></span> Remove
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 <div *ngIf="isFormLoaded">
         <div *ngIf="!isApplicationFilled">
                 <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
                     <h3>{{FormTitle}}</h3>
+                    
                     <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
                         <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
             
@@ -16,7 +65,7 @@
                                     <div *ngSwitchCase="'Radio'">
                                         <div *ngFor="let option of field.options;let optionindex = index">
                                             {{option}}
-                                            <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                            <input class="" type="radio" [formControlName]="fieldindex" [value]="option">
                                         </div>
                                     </div>
                                     <!-----------------------End Radio Button------------------>
@@ -25,7 +74,7 @@
                                     <div *ngSwitchCase="'Checkbox'">
                                         <div *ngFor="let option of field.options; let optionindex = index" [formArrayName]="fieldindex">
                                             {{option}}
-                                            <input class="form-control" type="checkbox" [formControlName]="optionindex">
+                                            <input class="" type="checkbox" [formControlName]="optionindex">
                                         </div>
                                     </div>
                                     <!-----------------------End Checkbox Button------------------>
@@ -144,21 +193,21 @@
             </div>
             
             <div *ngIf="isApplicationFilled">
-                <h3>{{FormTitle}}</h3>
+                <h3 style="padding-top: 30px;">{{FormTitle}}</h3>
                 <form (ngSubmit)="onSaveForm()" [formGroup]="ProfileForm">
-                    <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;">
-                        <h4>{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
+                    <div formArrayName="customcontrols" *ngFor="let currsection of ProfileForm.get('customcontrols').controls; let currsectionindex = index;" style="width:40%">
+                        <h4 style="margin-top: 30px">{{FormLayout.Sections[currsectionindex][0].SectionName}}</h4>
             
                         <!-- Sections that cannot be multiple in Non Edit Mode -->
                         <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && !FormLayout.Sections[currsectionindex][0].isEditMode">
-                            <div *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
-                                <label>{{field.FieldName}}:</label> {{GetFieldValue(currsectionindex,0,fieldindex)}}
+                            <div *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index" class="row">
+                                <label class="col-md-6">{{field.FieldName}}:</label> <div  class="col-md-6">{{GetFieldValue(currsectionindex,0,fieldindex)}}</div>
                             </div>
                             <span>
                                 <a (click)="EditSubSection(currsectionindex, 0)">Edit {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
                             </span>
                         </ng-container>
-            
+           
                         <!-- Sections that cannot be multiple in Edit Mode -->
                         <ng-container *ngIf="!FormLayout.Sections[currsectionindex][0].CanBeMultiple && FormLayout.Sections[currsectionindex][0].isEditMode">
                             <ng-container *ngFor="let subsection of currsection.controls; let subindex = index" [formArrayName]="currsectionindex">
@@ -171,7 +220,7 @@
                                         <div *ngSwitchCase="'Radio'">
                                             <ng-container *ngFor="let option of field.options;let optionindex = index">
                                                 {{option}}
-                                                <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                                <input class="" type="radio" [formControlName]="fieldindex" [value]="option">
                                             </ng-container>
                                         </div>
             
@@ -289,9 +338,7 @@
                         </ng-container>
             
                         <!-- Sections that can be multiple -->
-                        <span>
-                            <a class="pull-right" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
-                        </span>
+                        
                         <table class="table table-bordered table-striped" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple">
                             <tr>
                                 <th *ngFor="let field of FormLayout.Sections[currsectionindex][0].Fields; let fieldindex = index">
@@ -327,7 +374,7 @@
                                         <td *ngSwitchCase="'Radio'">
                                             <ng-container *ngFor="let option of field.options;let optionindex = index">
                                                 {{option}}
-                                                <input class="form-control" type="radio" [formControlName]="fieldindex" [value]="option">
+                                                <input class="" type="radio" [formControlName]="fieldindex" [value]="option">
                                             </ng-container>
                                         </td>
             
@@ -450,12 +497,15 @@
             
                             </ng-container>
                         </table>
+                        <span>
+                            <a class="" *ngIf="FormLayout.Sections[currsectionindex][0].CanBeMultiple" (click)="AddSubSection(currsectionindex)">Add {{FormLayout.Sections[currsectionindex][0].SectionName}}</a>
+                        </span>
                         
                         <div *ngFor="let subsection of currsection.controls; let subindex = index">
                         </div>
             
                     </div>
-                    <button class="btn btn-primary" type="submit" [disabled]="isFormSaved != 2">Save Changes</button>
+                    <button class="btn btn-primary" type="submit" [disabled]="isFormSaved != 2" style="margin-top: 20px">Save Changes</button>
                 </form>
                 <div class="panel panel-danger" style="margin:10px" *ngIf="isFormSaved == -1">
                     <div class="panel-body">Details couldn\'t be saved.</div>

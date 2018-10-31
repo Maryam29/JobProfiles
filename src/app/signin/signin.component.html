@@ -1,10 +1,12 @@
+
+<div style="background-color: #e2edff;width: 60%;margin: auto; padding: 5% 0 5% 0;">
 <div class="row">
   <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
       <span class="help-block" >{{message}}</span>
       <form (ngSubmit)="OnSignIn(f)" #f="ngForm">
         <div class="form-group">
-          <label for="userid">Phone No.</label>
-            <input type="userid" 
+          <label for="userid">Phone No / E-Mail</label>
+            <input class="form-control" type="userid" 
                      id="userid" 
                      class="form-control" 
                      ngModel 

@@ -17,3 +17,12 @@
     margin-top:5px;
     color:white;
 }
+
+.hideElement{display: none;}
+
+.table-bordered>tbody>tr>th{font-weight: bold;}
+.table-bordered>tbody>tr>td,
+.table-bordered>tbody>tr>th {
+    border-color: black
+}
+h4{font-weight: bold}

@@ -1,51 +1,457 @@
 <ng-container *ngIf="!isProfileLoaded; else ProfileLoaded">
-  <div id="loading" class="overlay">
-    <div class="loader_div">
-        <img src="loader.gif"/><br><br>
-        <b class="loadingtext">Loading...</b>
+    <div id="loading" class="overlay">
+        <div class="loader_div">
+            <img src="loader.gif" /><br><br>
+            <b class="loadingtext">Loading...</b>
+        </div>
     </div>
-</div>
 </ng-container>
 
+
 <ng-template #ProfileLoaded>
-    <h3>{{Form.FormTitle}}</h3>
-    <select (change)="OnSelectTemplate($event)">
+
+    <h3 style="padding-top: 30px">{{Form.FormTitle}}</h3>
+    <select class="form-control" (change)="OnSelectTemplate($event)" style="width: 40%">
         <option selected disabled>Select Template</option>
-        <option *ngFor="let col of TemplateList;let j=index">{{col.TemplateTitle}}</option>
+        <!-- <option *ngFor="let col of TemplateList;let j=index">{{col.TemplateTitle}}</option> -->
+        <option value="1" selected="selected">OCS Template</option>
+        <option value="2" >Seadrill Template</option>
+        
       </select>
-      
-      <div #ApplicantProfile>
+
+    <div #ApplicantProfile style="display: none;">
         <div *ngFor="let section of Form.Sections;let secindex = index">
-          <h4>{{section.SectionName}}</h4>
-      
-          <!-- Sections that cannot be multiple in Non Edit Mode -->
-          <ng-container *ngIf="!section.CanBeMultiple">
-            <div *ngFor="let field of section.Fields; let fieldindex = index">
-              <ng-container *ngIf="field.isFieldChecked">
-                  <label> {{field.FieldName}}:</label> {{GetFieldValue(section.SectionID, 0, field.FieldID)}}
-              </ng-container>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="section.CanBeMultiple">
-            <table class="table table-striped table-bordered">
-              <tr>
-                <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
-                  <th *ngIf="field.isFieldChecked">
-                    {{field.FieldName}}
-                  </th>
-                </ng-container>
-              </tr>
-              <tr *ngFor="let subsection of Applicant[section.SectionID]; let subindex = index">
-                <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
-                  <td *ngIf="field.isFieldChecked">
-                    {{GetFieldValue(section.SectionID, subindex, field.FieldID)}}
-                  </td>
-                </ng-container>
-              </tr>
-            </table>
-          </ng-container>
-          <hr>
+            <h4>{{section.SectionName}}</h4>
+            <ng-container *ngIf="!section.CanBeMultiple">
+                <div *ngFor="let field of section.Fields; let fieldindex = index">
+                    <ng-container *ngIf="field.isFieldChecked" class="form-control">
+                        <div class="row">
+                            <div class="col-md-2"><label> {{field.FieldName}}:</label></div>
+                            <div class="col-md-2">{{GetFieldValue(section.SectionID, 0, field.FieldID)}}</div>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="section.CanBeMultiple">
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
+                            <th *ngIf="field.isFieldChecked">
+                                {{field.FieldName}}
+                            </th>
+                        </ng-container>
+                    </tr>
+                    <tr *ngFor="let subsection of Applicant[section.SectionID]; let subindex = index">
+                        <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
+                            <td *ngIf="field.isFieldChecked">
+                                {{GetFieldValue(section.SectionID, subindex, field.FieldID)}}
+                            </td>
+                        </ng-container>
+                    </tr>
+                </table>
+            </ng-container>
+            <hr>
         </div>
-      </div>
-      <button class="btn btn-primary" (click)="PrintToPdf()">Print</button>
+    </div>
+<div id="printable_format_2" *ngIf="format_2">
+    <table class="table table-bordered" style="margin-top:20px">
+        <tbody>
+            <tr>
+                <td style="width:65%; font-size: 27px"><span style="font-weight:bold">{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[0].FieldID)}}</span> <span style="font-weight:bold">{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[2].FieldID)}}</span></td>
+                <td>Phone no : {{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[5].FieldID)}}</td>
+            </tr>
+            <tr>
+                <td style="font-weight:bold">
+                    <p>Email : {{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[6].FieldID)}}</p>
+                    <p>Job applied for : {{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[3].FieldID)}}</p>
+                </td>
+                <td>
+                    <p>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[4].FieldID)}}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+<h4 style="font-weight:bold">Experience Details</h4>
+    <table class="table table-bordered" style="margin-top:20px" *ngFor="let subsection of Applicant[Form.Sections[1].SectionID]; let subindex = index">
+        <tbody>
+            <tr style="background-color:#c0c0c0">
+                <th>Company Name</th>
+                <th>Designation</th>
+                <th>Service period mmm.yy to mmm.yy</th>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[0].FieldID)}}, {{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[1].FieldID)}} & {{GetFieldValue(Form.Sections[1].SectionID, 0, Form.Sections[1].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[6].FieldID)}} - {{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[7].FieldID)}}</td>
+            </tr>
+            <tr>
+                <td colspan="3">Details of Experience: {{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[5].FieldID)}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table table-bordered" style="margin-top:20px">
+        <tbody>
+            <tr style="background-color:#c0c0c0;font-weight:bold">
+                
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[2].SectionID]; let subindex = index">
+               <td><span [class.hideElement]="subindex>0" style="font-weight:bold">Education</span></td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[1].FieldID)}} - {{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[2].FieldID)}}, {{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[0].FieldID)}},  {{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[9].FieldID)}},  {{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[7].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[6].FieldID)}}</td>
+            </tr>
+           
+            <!-- <tr>
+                <td></td>
+                <td>High school <span style="float:right">Institute name  city  country</span></td>
+                <td>Date completed mmm.yy</td>
+            </tr> -->
+        </tbody>
+    </table>
+
+    <table class="table table-bordered" style="margin-top:20px">
+        <tbody>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[3].SectionID]; let subindex = index">
+                <td><span [class.hideElement]="subindex>0" style="font-weight:bold">Trainings</span></td>
+                <td>{{GetFieldValue(Form.Sections[3].SectionID, subindex, Form.Sections[3].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[3].SectionID, subindex, Form.Sections[3].Fields[1].FieldID)}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <table class="table table-bordered" style="margin-top:20px">
+        <tbody>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[10].SectionID]; let subindex = index">
+                <td><span [class.hideElement]="subindex>0" style="font-weight:bold">Extra-Curricular</span></td>
+                <td colspan="4">{{GetFieldValue(Form.Sections[10].SectionID, subindex, Form.Sections[10].Fields[0].FieldID)}}</td>
+                
+            </tr>
+            <tr>
+                <td style="font-weight:bold">References</td>
+                <td>Name</td>
+                <td>Designation</td>
+                <td>Company</td>
+                <td>Contact Info</td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[4].SectionID]; let subindex = index">
+                <td></td>
+                <td>{{GetFieldValue(Form.Sections[4].SectionID, subindex, Form.Sections[4].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[4].SectionID, subindex, Form.Sections[4].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[4].SectionID, subindex, Form.Sections[4].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[4].SectionID, subindex, Form.Sections[4].Fields[3].FieldID)}}</td>
+            </tr>
+            
+            <tr>
+                <td style="font-weight:bold">Work Authorization </td>
+                <td>India</td>
+                <td>UAE</td>
+                <td>Singapore</td>
+                <td>Malaysia</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="printable_format_1" *ngIf="format_1" style="margin-top: 20px">
+        <div style="display:flex"><img src="https://www.ocs.services//images/Oilfield_Consolidated_Services.jpg" style="margin-left:30px">
+            <h3 style="text-decoration: underline;margin-left:20px">OCS Services (India) Private Limited</h3>
+        </div>
+        <div style="display:flex">
+            <table class="table table-bordered" style="margin-top:20px;width:60%">
+                <tr>
+                    <td style="background-color:#c5d9f1;font-weight:bold">Date of submission</td>
+                    <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[23].FieldID)}}</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#c5d9f1;font-weight:bold">Current Post:</td>
+                    <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[3].FieldID)}}</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#c5d9f1;font-weight:bold">Post Applied For:</td>
+                    <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[14].FieldID)}}</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#c5d9f1;font-weight:bold">Pan Card Number:</td>
+                    <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[24].FieldID)}}</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#c5d9f1;font-weight:bold">Aadhar Card Number:</td>
+                    <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[7].FieldID)}}</td>
+                </tr>
+            </table>
+            <div style="width:40%"><img src="http://akdesign.in/dev/images/dummy-male.jpg" style="display: block;margin: auto;width:50%"></div>
+        </div>
+        <h4>PERSONAL DETAILS</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style=";font-weight:bold">
+                <td style="background-color:#c5d9f1">Name: As Per Passport</td>
+                <td style="background-color:#c5d9f1">Last Name</td>
+                <td style="background-color:#c5d9f1">First Name</td>
+                <td style="background-color:#c5d9f1">Middle Name</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[1].FieldID)}}</td>
+            </tr>
+        </table>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style=";font-weight:bold">
+                <td style="background-color:#c5d9f1">Date Of Birth</td>
+                <td style="background-color:#c5d9f1">Age</td>
+                <td style="background-color:#c5d9f1">Gender</td>
+                <td style="background-color:#c5d9f1">Place Of Birth</td>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[16].FieldID)}}</td>
+                <td >{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[17].FieldID)}}</td>
+                <td >{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[18].FieldID)}}</td>
+                <td >{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[19].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr>
+                <td style="background-color:#c5d9f1;font-weight:bold">Address</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[4].FieldID)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color:#c5d9f1;font-weight:bold">Email ID</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[6].FieldID)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color:#c5d9f1;font-weight:bold">Contact No</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[5].FieldID)}}</td>
+            </tr>
+            <tr>
+                <td style="background-color:#c5d9f1;font-weight:bold">Skype ID</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[15].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>EDUCATIONAL QUALIFICATION</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Education</td>
+                <td style="background-color:#c5d9f1">Degree</td>
+                <td style="background-color:#c5d9f1">Year</td>
+                <td style="background-color:#c5d9f1">Marks</td>
+                <td style="background-color:#c5d9f1">Grade</td>
+                <td style="background-color:#c5d9f1">Board</td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[2].SectionID]; let subindex = index">
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[6].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[4].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[2].SectionID, subindex, Form.Sections[2].Fields[5].FieldID)}}</td>
+            </tr>
+            <!-- <tr>
+                <td>Higher Secondary School</td>
+                <td>HSC</td>
+                <td>1998</td>
+                <td>65%</td>
+                <td>1</td>
+                <td>Department of Pre-University Education</td>
+            </tr>
+            <tr>
+                <td>Under Graduation</td>
+                <td>Diploma Mechanical</td>
+                <td>2001</td>
+                <td>66%</td>
+                <td>1</td>
+                <td>Hebich Technical Training Institute, Karnataka</td>
+            </tr>
+            <tr>
+                <td>Post Graduation</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr> -->
+        </table>
+
+
+        <h4>PASSPORT DETAILS</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Passport No</td>
+                <td style="background-color:#c5d9f1">Place of Issue</td>
+                <td style="background-color:#c5d9f1">Issue Date</td>
+                <td style="background-color:#c5d9f1">Expiry Date</td>
+                <td style="background-color:#c5d9f1">ECR/ECNR</td>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[7].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[20].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[21].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[10].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[0].SectionID, 0, Form.Sections[0].Fields[22].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>SEAMEN BOOK DETAILS</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Seamen Book No</td>
+                <td style="background-color:#c5d9f1">Place of Issue</td>
+                <td style="background-color:#c5d9f1">Issue Date</td>
+                <td style="background-color:#c5d9f1">Expiry Date</td>
+                <td style="background-color:#c5d9f1">Seamen Book Type</td>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[5].SectionID, 0, Form.Sections[5].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[5].SectionID, 0, Form.Sections[5].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[5].SectionID, 0, Form.Sections[5].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[5].SectionID, 0, Form.Sections[5].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[5].SectionID, 0, Form.Sections[5].Fields[4].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>POLICE CLEARANCE</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Local PCC Issue Date</td>
+                <td style="background-color:#c5d9f1">Passport PCC Issue Date</td>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[6].SectionID, 0, Form.Sections[6].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[6].SectionID, 0, Form.Sections[6].Fields[1].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>MEDICAL DETAILS</h4>
+        <table class="table table-bordered" style="margin-top:20px" >
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Blood Group</td>
+                <td style="background-color:#c5d9f1">Date of Last MEdical Examination</td>
+                <td style="background-color:#c5d9f1">Place of Last MEdical Examination</td>
+                <td style="background-color:#c5d9f1">Valid Until</td>
+            </tr>
+            <tr>
+                <td>{{GetFieldValue(Form.Sections[7].SectionID, 0, Form.Sections[7].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[7].SectionID, 0, Form.Sections[7].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[7].SectionID, 0, Form.Sections[7].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[7].SectionID, 0, Form.Sections[7].Fields[3].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>SAFETY CERTIFICATION:</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Name</td>
+                <td style="background-color:#c5d9f1">Certification No.</td>
+                <td style="background-color:#c5d9f1">Issue Date</td>
+                <td style="background-color:#c5d9f1">Expiry Date</td>
+                <td style="background-color:#c5d9f1">Issuing Authority</td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[8].SectionID]; let subindex = index">
+                <td>{{GetFieldValue(Form.Sections[8].SectionID, subindex, Form.Sections[8].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[8].SectionID, subindex, Form.Sections[8].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[8].SectionID, subindex, Form.Sections[8].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[8].SectionID, subindex, Form.Sections[8].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[8].SectionID, subindex, Form.Sections[8].Fields[4].FieldID)}}</td>
+            </tr>
+            
+        </table>
+
+        <h4>JOB SPECIFIC CERTIFICATIONS:</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Name</td>
+                <td style="background-color:#c5d9f1">Certificate No.</td>
+                <td style="background-color:#c5d9f1">Issue Date</td>
+                <td style="background-color:#c5d9f1">Expiry Date</td>
+                <td style="background-color:#c5d9f1">Issuing Authority</td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[9].SectionID]; let subindex = index">
+                <td>{{GetFieldValue(Form.Sections[9].SectionID, subindex, Form.Sections[9].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[9].SectionID, subindex, Form.Sections[9].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[9].SectionID, subindex, Form.Sections[9].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[9].SectionID, subindex, Form.Sections[9].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[9].SectionID, subindex, Form.Sections[9].Fields[4].FieldID)}}</td>
+            </tr>
+        </table>
+
+        <h4>WORK EXPERIENCE: (Starting with the Most Recent/Current Role)</h4>
+        <table class="table table-bordered" style="margin-top:20px">
+            <tr style="font-weight:bold">
+                <td style="background-color:#c5d9f1">Compay Name</td>
+                <td style="background-color:#c5d9f1">Rig/Installation Name</td>
+                <td style="background-color:#c5d9f1">Rig/Installation Type</td>
+                <td style="background-color:#c5d9f1">Designation</td>
+                <td style="background-color:#c5d9f1">Date From</td>
+                <td style="background-color:#c5d9f1">Date To</td>
+            </tr>
+            <tr *ngFor="let subsection of Applicant[Form.Sections[1].SectionID]; let subindex = index">
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[0].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[1].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[2].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[3].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[6].FieldID)}}</td>
+                <td>{{GetFieldValue(Form.Sections[1].SectionID, subindex, Form.Sections[1].Fields[7].FieldID)}}</td>
+            </tr>
+        </table>
+    </div>
+
+
+
+    <!-- <div *ngFor="let section of Form.Sections;let secindex = index">
+        <ng-container *ngIf="!section.CanBeMultiple">
+            <table>
+                <ng-container *ngFor="let field of section.Fields; let fieldindex = index">
+                    <tr>
+                        <td>
+                            <span *ngIf="field.FieldName=='First Name'">{{GetFieldValue(section.SectionID, 0, field.FieldID)}}</span>
+                            <span *ngIf="field.FieldName=='Last Name'">{{GetFieldValue(section.SectionID, 0, field.FieldID)}}</span>
+                        </td>
+                        <td *ngIf="field.FieldName=='Email ID'">
+                            Email: {{GetFieldValue(section.SectionID, 0, field.FieldID)}}
+                        </td>
+                        <td *ngIf="field.FieldName=='Current Post'">
+                            Job Apllied For: {{GetFieldValue(section.SectionID, 0, field.FieldID)}}
+                        </td>
+                    </tr>
+                    <tr *ngIf="field.FieldName=='Address'">
+
+                        <td colspan="3">Address: {{GetFieldValue(section.SectionID, 0, field.FieldID)}}</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </ng-container>
+    </div> -->
+    <!-- <div *ngFor="let section of Form.Sections;let secindex = index">
+        <ng-container *ngIf="section.CanBeMultiple">
+            <table class="table table-bordered">
+
+                <ng-container *ngFor="let field of section.Fields; let fieldindex = index" class="row">
+                    <div class="col-md-4" style="border-bottom:1px solid #ddd;min-height: 89px">
+                        <tr>
+
+                            <th *ngIf="field.isFieldChecked">{{field.FieldName}}</th>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>{{GetFieldValue(section.SectionID, 0, field.FieldID)}}</td>
+
+                        </tr>
+                    </div>
+                </ng-container>
+            </table>
+        </ng-container>
+    </div> -->
+
+
+    <button class="btn btn-primary" (click)="PrintToPdf()" *ngIf="format_1">Print</button>
+    <button class="btn btn-primary" (click)="PrintToPdf_2()" *ngIf="format_2">Print</button>
 </ng-template>
